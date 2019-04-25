@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 25/04/2019 00:40:21 by Hibernate Tools 4.3.1 -->
+<hibernate-mapping>
+    <class name="model.Category" table="category" schema="gcsystem" optimistic-lock="version">
+        <id name="code" type="int">
+            <column name="code" />
+            <generator class="sequence">
+                <param name="sequence">
+                    gcsystem.category_code_seq
+                </param>
+            </generator>
+        </id>
+        <property name="description" type="string">
+            <column name="description" length="40" />
+        </property>
+        <set name="additionals" table="additional" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="code_category" not-null="true" />
+            </key>
+            <one-to-many class="model.Additional" />
+        </set>
+        <set name="items" table="item" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="code_category" not-null="true" />
+            </key>
+            <one-to-many class="model.Item" />
+        </set>
+        <set name="filterhistories" table="filterhistory" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="code_category" not-null="true" />
+            </key>
+            <one-to-many class="model.Filterhistory" />
+        </set>
+    </class>
+</hibernate-mapping>

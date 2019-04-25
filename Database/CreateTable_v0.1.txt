@@ -1,0 +1,117 @@
+﻿--Tabelas	
+create table if not exists tablelist(
+	code integer,
+	description varchar(10),
+	active char(3),
+	constraint tablelist_pk1 primary key (code));
+	
+create table if not exists guestcheck(
+	code integer,
+	barcode varchar(10),
+	active char(3),
+	constraint guestcheck_pk1 primary key (code));
+	
+create table if not exists category(
+	code integer,
+	description varchar(40),
+	constraint category_pk1 primary key (code));
+	
+create table if not exists item(
+	code integer,
+	description varchar(40),
+	price decimal(6,2),
+	preparation varchar(10),
+	additional char(3),
+	active char(3),
+	code_category integer,
+	constraint item_pk1 primary key (code),
+	constraint item_fk1 foreign key (code_category) references category(code));
+	
+create table if not exists additional(
+	code integer,
+	description varchar(40),
+	price decimal(6,2),
+	active char(3),
+	code_category integer,
+	constraint additional_pk1 primary key (code),
+	constraint additional_fk1 foreign key (code_category) references category(code));
+	
+create table if not exists request(
+	code integer,
+	status varchar(20),
+	datetimeins timestamp,
+	datetimeend timestamp,
+	paymoney decimal(6,2),
+	paycard decimal(6,2),
+	cardtype varchar(2),
+	code_guestcheck integer,
+	code_tablelist integer,
+	constraint request_pk1 primary key (code),
+	constraint request_fk2 foreign key (code_guestcheck) references guestcheck(code),
+	constraint request_fk3 foreign key (code_tablelist) references tablelist(code));
+	
+create table if not exists requestitem(
+	code integer,
+	status varchar(20),
+	countitem integer,
+	note varchar(150),
+	check_requeststart char(1),
+	datetimeins timestamp,
+	datetimeupd timestamp,
+	code_request integer,
+	code_item integer,
+	constraint requestitem_pk1 primary key (code),
+	constraint requestitem_fk1 foreign key (code_request) references request(code),
+	constraint requestitem_fk2 foreign key (code_item) references item(code));
+	
+create table if not exists requestadditionalitem(
+	code integer,
+	code_requestitem integer,
+	code_additional integer,
+	constraint requestadditional_pk1 primary key (code),
+	constraint requestadditional_fk1 foreign key (code_requestitem) references requestitem(code),
+	constraint requestadditional_fk2 foreign key (code_additional) references additional(code));
+	
+create table if not exists filterhistory(
+	code integer,
+	code_category integer,
+	constraint filterhistory_pk1 primary key (code),
+	constraint filterhistory_fk1 foreign key (code_category) references category(code));
+	
+create table if not exists comboitem(
+	code integer,
+	countitem integer,
+	code_item integer,
+	code_comboitem integer,
+	constraint comboitem_pk1 primary key (code),
+	constraint comboitem_fk1 foreign key (code_item) references item(code),
+	constraint comboitem_fk2 foreign key (code_comboitem) references item(code));
+	
+create table if not exists additionalitem(
+	code integer,
+	code_additional integer,
+	code_item integer,
+	constraint additionalitem_pk1 primary key (code),
+	constraint additionalitem_fk1 foreign key (code_additional) references additional(code),
+	constraint additionalitem_fk2 foreign key (code_item) references item(code));	
+	
+--Seqências
+create sequence if not exists tablelist_code_seq;
+create sequence if not exists guestcheck_code_seq;
+create sequence if not exists category_code_seq;
+create sequence if not exists item_code_seq;
+create sequence if not exists additional_code_seq;
+create sequence if not exists additionalitem_code_seq;
+create sequence if not exists comboitem_code_seq;
+create sequence if not exists request_code_seq;
+create sequence if not exists requestitem_code_seq;
+create sequence if not exists requestadditionalitem_code_seq;
+create sequence if not exists filterhistory_code_seq;
+
+--Index
+create unique index if not exists tablelist_idxu1 on tablelist(description);
+create unique index if not exists guestcheck_idxu1 on guestcheck(barcode);
+create unique index if not exists requestadditionalitem_idxu1 on requestadditionalitem(code_requestitem,code_additional);
+
+--Insert
+insert into category (code,description) values (hr_nextval('category_code_seq'),'COMBOS') on conflict (code) do nothing;

@@ -1,0 +1,143 @@
+--Schema
+create schema gcsystem;
+
+--Tabelas	
+create table if not exists gcsystem.systemview(
+	code serial not null,
+	name varchar(60),
+	classname varchar(60),
+	constraint systemview_pk1 primary key (code));
+
+create table if not exists gcsystem.userlogin(
+	code serial not null,
+	name varchar(60),
+	login varchar(20),
+	password varchar(100),
+	active char(3),
+	constraint userlogin_pk1 primary key (code));
+	
+create table if not exists gcsystem.userpermission(
+	code integer not null,
+	cashier char(1),
+	attendant char(1),
+	constraint userpermission_pk1 primary key (code),
+	constraint userpermission_fk1 foreign key (code) references gcsystem.userlogin(code));
+	
+create table if not exists gcsystem.userlog(
+	code integer not null,
+	datetimeins timestamp,
+	logtype varchar(10),
+	code_systemview integer,
+	constraint userlog_pk1 primary key (code),
+	constraint userlog_fk1 foreign key (code) references gcsystem.userlogin(code),
+	constraint userlog_fk2 foreign key (code_systemview) references gcsystem.systemview(code));
+
+create table if not exists gcsystem.tablelist(
+	code serial not null,
+	description varchar(10),
+	active char(3),
+	constraint tablelist_pk1 primary key (code));
+	
+create table if not exists gcsystem.guestcheck(
+	code serial not null,
+	barcode varchar(10),
+	active char(3),
+	constraint guestcheck_pk1 primary key (code));
+	
+create table if not exists gcsystem.category(
+	code serial not null,
+	description varchar(40),
+	constraint category_pk1 primary key (code));
+	
+create table if not exists gcsystem.item(
+	code serial not null,
+	description varchar(40),
+	price decimal(6,2),
+	preparation varchar(10),
+	additional char(3),
+	active char(3),
+	code_category integer not null,
+	constraint item_pk1 primary key (code),
+	constraint item_fk1 foreign key (code_category) references gcsystem.category(code));
+	
+create table if not exists gcsystem.additional(
+	code serial not null,
+	description varchar(40),
+	price decimal(6,2),
+	active char(3),
+	code_category integer not null,
+	constraint additional_pk1 primary key (code),
+	constraint additional_fk1 foreign key (code_category) references gcsystem.category(code));
+	
+create table if not exists gcsystem.request(
+	code serial not null,
+	status varchar(20),
+	datetimeins timestamp,
+	datetimeend timestamp,
+	paymoney decimal(6,2),
+	paycard decimal(6,2),
+	cardtype varchar(2),
+	code_guestcheck integer not null,
+	code_tablelist integer not null,
+	code_userlogin integer not null,
+	constraint request_pk1 primary key (code),
+	constraint request_fk1 foreign key (code_guestcheck) references gcsystem.guestcheck(code),
+	constraint request_fk2 foreign key (code_tablelist) references gcsystem.tablelist(code),
+	constraint request_fk3 foreign key (code_userlogin) references gcsystem.userlogin(code));
+	
+create table if not exists gcsystem.requestitem(
+	code serial not null,
+	status varchar(20),
+	countitem integer,
+	note varchar(150),
+	check_requeststart char(1),
+	datetimeins timestamp,
+	datetimeupd timestamp,
+	code_request integer not null,
+	code_item integer not null,
+	constraint requestitem_pk1 primary key (code),
+	constraint requestitem_fk1 foreign key (code_request) references gcsystem.request(code),
+	constraint requestitem_fk2 foreign key (code_item) references gcsystem.item(code));
+	
+create table if not exists gcsystem.requestadditionalitem(
+	code serial not null,
+	code_requestitem integer not null,
+	code_additional integer not null,
+	constraint requestadditional_pk1 primary key (code),
+	constraint requestadditional_fk1 foreign key (code_requestitem) references gcsystem.requestitem(code),
+	constraint requestadditional_fk2 foreign key (code_additional) references gcsystem.additional(code));
+	
+create table if not exists gcsystem.filterhistory(
+	code serial not null,
+	code_category integer not null,
+	code_userlogin integer not null,
+	constraint filterhistory_pk1 primary key (code),
+	constraint filterhistory_fk1 foreign key (code_category) references gcsystem.category(code),
+	constraint filterhistory_fk2 foreign key (code_userlogin) references gcsystem.userlogin(code));
+	
+create table if not exists gcsystem.comboitem(
+	code serial not null,
+	countitem integer,
+	code_item integer not null,
+	code_comboitem integer not null,
+	constraint comboitem_pk1 primary key (code),
+	constraint comboitem_fk1 foreign key (code_item) references gcsystem.item(code),
+	constraint comboitem_fk2 foreign key (code_comboitem) references gcsystem.item(code));
+	
+create table if not exists gcsystem.additionalitem(
+	code serial not null,
+	code_additional integer not null,
+	code_item integer not null,
+	constraint additionalitem_pk1 primary key (code),
+	constraint additionalitem_fk1 foreign key (code_additional) references gcsystem.additional(code),
+	constraint additionalitem_fk2 foreign key (code_item) references gcsystem.item(code));	
+
+--Index
+create unique index if not exists tablelist_idxu1 on gcsystem.tablelist(description);
+create unique index if not exists guestcheck_idxu1 on gcsystem.guestcheck(barcode);
+create unique index if not exists requestadditionalitem_idxu1 on gcsystem.requestadditionalitem(code_requestitem,code_additional);
+create unique index if not exists userlogin_idxu1 on gcsystem.userlogin(login);
+
+--Insert
+insert into gcsystem.category (code,description) values (nextval('gcsystem.category_code_seq'),'COMBOS') on conflict (code) do nothing;
+insert into gcsystem.userlogin (code,name,login,password,active) values (nextval('gcsystem.userlogin_code_seq'),'Macro Tech','root','[C@34d08e53','SIM') on conflict (login) do nothing;

@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 25/04/2019 00:40:21 by Hibernate Tools 4.3.1 -->
+<hibernate-mapping>
+    <class name="model.Userlog" table="userlog" schema="gcsystem" optimistic-lock="version">
+        <id name="code" type="int">
+            <column name="code" />
+            <generator class="sequence">
+                <param name="sequence">
+                    gcsystem.userlog_code_seq
+                </param>
+            </generator>
+        </id>
+        <many-to-one name="systemview" class="model.Systemview" fetch="select">
+            <column name="code_systemview" />
+        </many-to-one>
+        <many-to-one name="userlogin" class="model.Userlogin" fetch="select">
+            <column name="code_userlogin" />
+        </many-to-one>
+        <property name="datetimeins" type="timestamp">
+            <column name="datetimeins" length="29" />
+        </property>
+        <property name="logtype" type="string">
+            <column name="logtype" length="20" />
+        </property>
+    </class>
+</hibernate-mapping>

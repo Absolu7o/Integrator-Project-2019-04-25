@@ -1,0 +1,166 @@
+0.0.0.100061920104096962454841342120apprunfunction apprun()
+  g.listAvailable=QPlaListWidget("A16")
+  g.listChosen=QPlaListWidget("D16")
+  g.listAvailable:connectClicked("clickToAdd(index)")
+  g.listChosen:connectClicked("clickToRemove(index)")
+  g.additionalTable={} 
+  --
+  hrcli:execaction("A1","last","")
+  --
+  g.loadList=function()
+   local query=SDBQuery()
+   local item=QPlaListWidgetItem()
+   local codeChosen=SString()
+   local filter=""
+   --
+   if (hrcli:getCarregado("A7")==true) then
+    if (hrcli:getModo("A7")=="update") then
+     hrcli:script("editAdditional()")
+    else
+     hrcli:enabled("A16",false)
+     hrcli:enabled("D16",false)
+    end
+    --
+    g.additionalTable={}
+    g.listAvailable:clear()
+    g.listChosen:clear()
+    --
+    query:setSQL("select add.code,add.description from item ite join additionalitem adi on (ite.code=adi.code_item) join additional add on (adi.code_additional=add.code) where (ite.code=".. hrcli:getValor("B10") ..") order by add.code")
+    if (hrsrv:sqlExec(query:self())==true) then
+     while (query:nextResult()==true) do
+      codeChosen:cat(query:fieldInteger(0) ..",")
+      g.additionalTable[query:fieldInteger(0)]=""
+      --
+      item:pointer(g.listChosen:add(query:fieldInteger(0)))
+      item:addLabel(query:fieldString(1),1,1,1,1)
+     end
+    end
+    --
+    if (codeChosen:length()>1) then
+     codeChosen:realloc(codeChosen:length()-1) --Remove a virgula
+     filter=" and (add.code not in (".. codeChosen:array() .."))"
+    end
+    --
+    query:setSQL("select add.code,add.description from additional add where (add.code_category=".. hrcli:getValor("B4") ..")".. filter .." order by add.code")
+    if (hrsrv:sqlExec(query:self())==true) then
+     while (query:nextResult()==true) do
+      item:pointer(g.listAvailable:add(query:fieldInteger(0)))
+      item:addLabel(query:fieldString(1),1,1,1,1)
+     end
+    end
+    --
+    g.listAvailable:runList()
+    g.listChosen:runList()
+    --
+   elseif (hrcli:getModo("A7")=="insert") then
+    g.additionalTable={}
+    g.listAvailable:clear()
+    g.listChosen:clear()
+    --
+    hrcli:valor("E12","")
+    --
+    query:setSQL("select add.code,add.description from additional add where (add.code_category=".. hrcli:getValor("B4") ..") order by add.code")
+    if (hrsrv:sqlExec(query:self())==true) then
+     while (query:nextResult()==true) do
+      item:pointer(g.listAvailable:add(query:fieldInteger(0)))
+      item:addLabel(query:fieldString(1),1,1,1,1)
+     end
+    end
+    --
+    g.listAvailable:runList()
+    --
+   else
+    g.additionalTable={}
+    g.listAvailable:clear()
+    g.listChosen:clear()
+    --
+    hrcli:valor("F10","")
+    hrcli:valor("E12","")
+    hrcli:valor("D13","")
+    --
+    hrcli:enabled("A16",false)
+    hrcli:enabled("D16",false)
+   end
+  end
+ endclickToRemovefunction clickToRemove(index)
+  local query=SDBQuery()
+  local item=QPlaListWidgetItem()
+  --
+  query:setSQL("select add.description from additional add where (add.code=".. index ..")")
+  if (hrsrv:sqlExec(query:self())==true) then
+   if (query:nextResult()==true) then
+    item:pointer(g.listAvailable:addFirst(index))
+    item:addLabel(query:fieldString(0),1,1,1,1)
+   end
+   g.listAvailable:runList()
+  end
+  --
+  g.additionalTable[index]=nil
+  g.listChosen:removeRow(g.listChosen:rowFind(index))
+ endclickToAddfunction clickToAdd(index)
+  local query=SDBQuery()
+  local item=QPlaListWidgetItem()
+  --
+  query:setSQL("select add.description from additional add where (add.code=".. index ..")")
+  if (hrsrv:sqlExec(query:self())==true) then
+   if (query:nextResult()==true) then
+    item:pointer(g.listChosen:addFirst(index))
+    item:addLabel(query:fieldString(0),1,1,1,1)
+   end
+   g.listChosen:runList()
+  end
+  --
+  g.additionalTable[index]=""
+  g.listAvailable:removeRow(g.listAvailable:rowFind(index))
+ endtitleItemfunction titleItem()
+  g.loadList()
+ endeditAdditionalfunction editAdditional()
+  local bool=(hrcli:getValor("D13")=="SIM")
+  --
+  hrcli:enabled("A16",bool)
+  hrcli:enabled("D16",bool)
+  --
+  hrcli:linhavisivel(15,8,bool)
+ endconfirmItemfunction confirmItem()
+  local query=SDBQuery()
+  local codeItem=hrcli:getValor("B10")
+  --
+  hrsrv:sqlBegin()
+  hrcli:execaction("A7","post","")
+  --
+  query:setSQL("delete from additionalitem where (code_item=".. codeItem ..")")
+  hrsrv:sqlExec(query:self())
+  --
+  if (hrcli:getValor("D13")=="SIM") then
+   for key,value in pairs(g.additionalTable) do
+    query:setSQL("insert into additionalitem (code,code_item,code_additional) values (hr_nextval('additionalitem_code_seq'),".. codeItem ..",".. key ..")")
+    hrsrv:sqlExec(query:self())
+   end
+  end
+  --
+  hrsrv:sqlCommit()
+ enddeleteItemfunction deleteItem()
+  local query=SDBQuery()
+  local codeItem=hrcli:getValor("B10")
+  local confirm=nil
+  --
+  confirm=hrcli:showConfirmacao("dialog","?","1002","Atenção","Deseja realmente excluir o Item selecionado? Adicionais associados a ele também serão excluidos.","Sim|Não")
+  if (confirm=="1") then
+   query:setSQL("select 1 from requestitem where (code_item=".. codeItem ..") limit 1")
+   if (hrsrv:sqlExec(query:self())==true) then
+    if (query:nextResult()==true) then
+     hrcli:mensagem("1","dialog","X","1","Não foi possível excluir","Item selecionado já foi utilizado em um ou mais pedidos. Se desejar, o item pode ser desabilitado (Campo 'Ativo').")
+    else
+     hrsrv:sqlBegin("dialog","V","Item Excluido","Item foi excluido com sucesso")
+     --
+     query:setSQL("delete from additionalitem where (code_item=".. codeItem ..")")
+     hrsrv:sqlExec(query:self())
+     --
+     query:setSQL("delete from item where (code=".. codeItem ..")")
+     hrsrv:sqlExec(query:self())
+     --
+     hrsrv:sqlCommit()
+    end
+   end
+  end
+ end00=titulo("Seleção de Categorias","category");=mesclagem(1,3);=fonte("Application",9,1,1);=filtrofixo("code","inteiro","<>","1")03=modo(A1);=mesclagem(1,3)10=navegacao(A1,navativo("inserir",0),navativo("deletar",0),navativo("alterar",0));=mesclagem(1,6)30=campo(A1,"Código","code");=inteiro(9);=principal();=serial()31=dados(A4,componente("lineedit"),autoConfirm(0),expressao(execaction(A1,"get","")))32=selecao(A1)40=campo(A1,"Descrição","description");=texto(40)41=dados(A5,componente("lineedit"));=mesclagem(1,4)60=titulo("Cadastro de Itens","item",ligacao(A1,"code_category"),expressao(script("titleItem()")));=mesclagem(1,3);=fonte("Application",9,1,1)63=modo(A7);=mesclagem(1,3)70=navegacao(A7,navexpressao("confirmar",script("confirmItem()")),navexpressao("deletar",script("deleteItem()")));=mesclagem(1,6)90=campo(A7,"Código","code");=inteiro(9);=principal();=serial()91=dados(A10,componente("lineedit"),autoConfirm(0),expressao(execaction(A7,"get","")))92=selecao(A7)94=campo(A7,"Ativo","active");=texto(3);=alinhamento("direita","centro");=default("SIM")95=dados(E10,componente("combobox","SIM","NÃO"))100=campo(A7,"Descrição","description");=texto(40)101=dados(A11,componente("lineedit"));=mesclagem(1,4)110=campo(A7,"Preço","price");=decimal(8.200000);=mascara("R$ %.2f")111=dados(A12,componente("lineedit"))112=campo(A7,"Preparação","preparation");=texto(10);=alinhamento("direita","centro");=mesclagem(1,2)114=dados(C12,componente("combobox","Pronto","Preparar"));=mesclagem(1,2)120=campo(A7,"Disponibilizar Adicionais","additional");=texto(10);=alinhamento("esquerda","centro");=default("NÃO");=mesclagem(1,3)123=dados(A13,componente("combobox","SIM","NÃO"),autoExecute(1),expressao(script("editAdditional()")))140=label("Adicionais Dísponiveis");=mesclagem(1,3);=fonte("Application",8,1,0);=alinhamento("centro","centro")143=label("Adicionais Escolhidos");=mesclagem(1,3);=fonte("Application",8,1,0);=alinhamento("centro","centro")150=lista2(ativo(0));=mesclagem(7,3)153=lista2(ativo(0));=mesclagem(7,3)

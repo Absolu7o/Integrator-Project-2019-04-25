@@ -1,0 +1,279 @@
+0.0.0.100061920104096962125494573apprunfunction apprun()
+  g.listComboItem=QPlaListWidget("A12")
+  g.listComboItem:connectClicked("clickedListCombo(index)")
+  g.listComboItem:connectDoubleClicked("doubleClickedListCombo(index)")
+  g.listCategory=QPlaListWidget("A18")
+  g.listCategory:connectClicked("clickedCategory(index)")
+  g.listItem=QPlaListWidget("C18")
+  g.listItem:connectClicked("clickedItem(index)")
+  g.strTotal=SString()
+  g.totalPrice=0
+  g.tableItem={}
+  --
+  hrcli:execaction("A1","last","")
+  hrcli:linhavisivel(1,3,false)
+  hrcli:linhavisivel(22,1,false)
+  hrcli:setRowStretch(12)
+  hrcli:setRowStretch(17)
+  hrcli:enabled("F17",true)
+  --
+  g.loadList=function()
+   local query=SDBQuery()
+   local item=QPlaListWidgetItem()
+   local subItem=QPlaListWidgetSubItem()
+   --
+   g.strTotal:clear()
+   g.totalPrice=0
+   g.tableItem={}
+   g.listComboItem:clear()
+   --
+   if (hrcli:getCarregado("A4")==true) then
+    if (hrcli:getModo("A4")=="update") then
+     hrcli:enabled("A12",true)
+    else
+     hrcli:enabled("A12",false)
+    end
+    --
+    item:pointer(g.listComboItem:add(-2))
+    item:addIcon("0xe760",24,24,1,1,2,1)
+    subItem:pointer(item:addLabel("Adicionar novo",1,2,2,5))
+    --
+    query:setSQL("select ite.code,ite.description,cmb.countitem,ite.price from item ite join comboitem cmb on (ite.code=cmb.code_item) where (cmb.code_comboitem=".. hrcli:getValor("B7") ..") order by ite.code")
+    if (hrsrv:sqlExec(query:self())==true) then
+     while (query:nextResult()==true) do
+      item:pointer(g.listComboItem:add(query:fieldInteger(0)))
+      g.listAdd(item,query:fieldString(1),query:fieldInteger(2),query:fieldDecimal(3))
+      --
+      g.tableItem[query:fieldInteger(0)]=query:fieldInteger(2)
+      g.totalPrice=g.totalPrice + (query:fieldInteger(2)*query:fieldDecimal(3))
+     end
+    end
+    --
+    g.listComboItem:runList()
+    --
+    g.strTotal:fmtCopy("R$% 7.2f",g.totalPrice)
+    hrcli:valor("F11",g.strTotal:array())
+   elseif (hrcli:getModo("A4")=="insert") then
+    hrcli:enabled("A12",true)
+    hrcli:valor("F11","R$   0.00")
+    --
+    item:pointer(g.listComboItem:addFirst(-2))
+    item:addIcon("0xe760",24,24,1,1,2,1)
+    subItem:pointer(item:addLabel("Adicionar novo",1,2,2,5))
+    --
+    g.listComboItem:runList()
+   else
+    hrcli:enabled("A12",false)
+    hrcli:valor("F11","R$   0.00")
+   end
+  end
+  --
+  g.listAdd=function(item,description,countItem,price)
+	  local subItem=QPlaListWidgetSubItem()
+	  local strPrice=SString()
+   local alignRight=QFlagAlignment()
+	  --
+   alignRight:set(alignRight:vCenter()|alignRight:hRight())
+	  strPrice:fmtCopy("R$% 7.2f",price)
+	  --
+	  subItem:pointer(item:addLabel(description,1,1,2,5))
+	  subItem:pointer(item:addLabel("x ".. countItem,1,6,2,1))
+	  subItem:setAlignment(alignRight:self())
+   subItem:pointer(item:addLabel(strPrice:array(),1,7,2,3))
+   subItem:setAlignment(alignRight:self())
+  end
+  --
+  hrcli:script("form2(false)")
+ endtitleCombofunction titleCombo()
+  g.loadList()
+ endclickedListCombofunction clickedListCombo(index)
+  local query=SDBQuery()
+  local item=QPlaListWidgetItem()
+  local subItem=QPlaListWidgetSubItem()
+  local countItem=0
+  local aux=nil
+  --
+  if (index==-2) then
+   g.listCategory:clear()
+   g.listItem:clear()
+   --
+   hrcli:script("form1(false)")
+   hrcli:script("form2(true)")
+   --
+   query:setSQL("select code,description from category where (code<>1) order by code")
+   if (hrsrv:sqlExec(query:self())==true) then
+    while (query:nextResult()==true) do
+     item:pointer(g.listCategory:add(query:fieldInteger(0)))  
+     subItem:pointer(item:addLabel(query:fieldInteger(0),1,1,1,1))
+     subItem:pointer(item:addLabel(query:fieldString(1),1,2,1,5))
+    end 
+   end
+   --
+   g.listCategory:runList()
+  else
+   aux=g.tableItem[index]
+   --
+   countItem=hrcli:showInput("","","Digite a quantidade do Item","lineedit",aux)
+   if (tonumber(countItem)~=nil) then
+    if (tonumber(countItem)>0) then
+     g.tableItem[index]=countItem
+     --
+     query:setSQL("select description,price from item where (code=".. index ..")")
+     if (hrsrv:sqlExec(query:self())==true) then
+      if (query:nextResult()==true) then
+       item:pointer(g.listComboItem:getItemForUpdate(g.listComboItem:rowFind(index)))
+       g.listAdd(item,query:fieldString(0),countItem,query:fieldDecimal(1))
+       --
+       g.totalPrice=g.totalPrice - (aux*query:fieldDecimal(1))
+       g.totalPrice=g.totalPrice + (countItem*query:fieldDecimal(1))
+       --
+       g.strTotal:fmtCopy("R$% 7.2f",g.totalPrice)
+       hrcli:valor("F11",g.strTotal:array())
+      end
+     end
+     --
+     g.listComboItem:runList()
+    else
+     hrcli:mensagem("1","dialog","X","1","Valor Inválido","Entre com um valor válido","erro","")
+    end
+   end
+  end
+ endclickedCategoryfunction clickedCategory(index)
+  local query=SDBQuery()
+  local item=QPlaListWidgetItem()
+  local subItem=QPlaListWidgetSubItem()
+  local price=SString()
+  local code=SString()
+  local filter=""
+  --
+  for key,value in pairs(g.tableItem) do
+   code:cat(key ..",")
+  end
+  if (code:length()>0) then
+   code:realloc(code:length()-1)
+   filter=" and (code not in (".. code:array() .."))"
+  end
+  --
+  g.listItem:clear()
+  --
+  query:setSQL("select code,description,price from item where (code_category=".. index ..") and (active='SIM')".. filter .."")
+  if (hrsrv:sqlExec(query:self())==true) then
+   while (query:nextResult()==true) do
+    price:fmtCopy("R$% 7.2f",query:fieldDecimal(2))
+    --
+    item:pointer(g.listItem:add(query:fieldInteger(0)))  
+    subItem:pointer(item:addLabel(query:fieldInteger(0),1,1,1,1))
+    subItem:pointer(item:addLabel(query:fieldString(1),1,2,1,5))
+    subItem:pointer(item:addLabel(price:array(),1,7,1,3))
+   end 
+  end
+  --
+  g.listItem:runList()
+ endclickedItemfunction clickedItem(index)
+  local query=SDBQuery()
+  local item=QPlaListWidgetItem()
+  local subItem=QPlaListWidgetSubItem()
+  local price=SString()
+  --
+  query:setSQL("select code,description,price from item where (code=".. index ..")")
+  if (hrsrv:sqlExec(query:self())==true) then
+   if (query:nextResult()==true) then
+    item:pointer(g.listComboItem:add(query:fieldInteger(0)))
+    g.listAdd(item,query:fieldString(1),1,query:fieldDecimal(2))
+    --
+    g.tableItem[query:fieldInteger(0)]=1
+    g.totalPrice=g.totalPrice + query:fieldDecimal(2)
+    --
+    g.strTotal:clear()
+    g.strTotal:fmtCopy("R$% 7.2f",g.totalPrice)
+    hrcli:valor("F11",g.strTotal:array())
+   end
+  end
+  g.listComboItem:runList()
+  --
+  hrcli:script("returnItem()")
+ endreturnItemfunction returnItem()
+  hrcli:script("form1(true)")
+  hrcli:script("form2(false)")
+ enddoubleClickedListCombofunction doubleClickedListCombo(index)
+  local query=SDBQuery()
+  local confirm=nil
+  local valueRemove=nil
+  --
+  if (index>0) then
+   query:setSQL("select ite.description,ite.price from comboitem cmb join item ite on (cmb.code_item=ite.code) where (ite.code=".. index ..")")
+   if (hrsrv:sqlExec(query:self())==true) then
+    if (query:nextResult()==true) then
+     valueRemove=g.tableItem[index]*query:fieldDecimal(1)
+     --
+     confirm=hrcli:showConfirmacao("dialog","?","1002","Remover Item","Deseja realmente remover '".. query:fieldString(0) .."' do combo?","Sim|Não")
+     if (confirm=="1") then
+      g.listComboItem:removeRow(g.listComboItem:rowFind(index))
+      --
+      g.tableItem[index]=nil
+      g.totalPrice=g.totalPrice-valueRemove
+      g.strTotal:fmtCopy("R$% 7.2f",g.totalPrice)
+      --
+      hrcli:valor("F11",g.strTotal:array())
+     end
+    end
+   end
+  end
+ endconfirmCombofunction confirmCombo()
+  local query=SDBQuery()
+  local codeCombo=hrcli:getValor("B7")
+  --
+  hrsrv:sqlBegin()
+  hrcli:execaction("A4","post","")
+  --
+  query:setSQL("delete from comboitem where (code_comboitem=".. codeCombo ..")")
+  hrsrv:sqlExec(query:self())
+  --
+  for key,value in pairs(g.tableItem) do
+   query:setSQL("insert into comboitem (code,code_item,code_comboitem,countitem) values (hr_nextval('comboitem_code_seq'),".. key ..",".. codeCombo ..",".. value ..")")
+   hrsrv:sqlExec(query:self())
+  end
+  --
+  query:setSQL("select ite.preparation from comboitem cmb join item ite on (cmb.code_item=ite.code) where (cmb.code_comboitem=".. codeCombo ..") group by ite.preparation order by ite.preparation limit 1")
+  hrsrv:sqlExec(query:self())
+  if (query:nextResult()==true) then
+   query:setSQL("update item set preparation='".. query:fieldString(0) .."' where (code=".. codeCombo ..")")
+   hrsrv:sqlExec(query:self())
+  else
+   query:setSQL("update item set active='NÃO' where (code=".. codeCombo ..")")
+   hrsrv:sqlExec(query:self())
+   --
+   hrcli:execaction("A4","get","")
+   hrcli:mensagem("1","dialog","!","1","ATENÇÃO","Combo foi desabilitado, pois nenhum item foi selecionado. Ao editar o combo, é possível ativa-lo novamente (Campo 'Ativo').","erro","")
+  end
+  --
+  hrsrv:sqlCommit()
+ enddeleteCombofunction deleteCombo()
+  local query=SDBQuery()
+  local codeItem=hrcli:getValor("B7")
+  local confirm=nil
+  --
+  confirm=hrcli:showConfirmacao("dialog","?","1002","Atenção","Deseja realmente excluir o Combo selecionado?","Sim|Não")
+  if (confirm=="1") then
+   query:setSQL("select 1 from requestitem where (code_item=".. codeItem ..") limit 1")
+   if (hrsrv:sqlExec(query:self())==true) then
+    if (query:nextResult()==true) then
+     hrcli:mensagem("1","dialog","X","1","Não foi possível excluir","Combo selecionado já foi utilizado em um ou mais pedidos. Se desejar, o Combo pode ser desabilitado (Campo 'Ativo').","erro","")
+    else
+     hrsrv:sqlBegin("dialog","V","Combo Excluido","Combo foi excluido com sucesso")
+     --
+     query:setSQL("delete from comboitem where (code_comboitem=".. codeItem ..")")
+     hrsrv:sqlExec(query:self())
+     --
+     query:setSQL("delete from item where (code=".. codeItem ..")")
+     hrsrv:sqlExec(query:self())
+     --
+     hrsrv:sqlCommit()
+    end
+   end  
+  end
+ endform1function form1(bool)
+  hrcli:linhavisivel(4,13,bool)
+ endform2function form2(bool)
+  hrcli:linhavisivel(17,5,bool)
+ end00=titulo("Seleção de Categorias","category");=mesclagem(1,1);=fonte("Application",9,1,1);=filtrofixo("code","inteiro","=","1")01=modo(A1);=mesclagem(1,1)02=navegacao(A1);=mesclagem(1,1)10=campo(A1,"Código","code");=inteiro(9);=principal();=serial()11=dados(A2,componente("lineedit"),autoConfirm(0),expressao(execaction(A1,"get","")))30=titulo("Cadastro de Combos","item",ligacao(A1,"code_category"),expressao(script("titleCombo()")));=mesclagem(1,3);=fonte("Application",9,1,1)33=modo(A4);=mesclagem(1,3)40=navegacao(A4,navexpressao("confirmar",script("confirmCombo()")),navexpressao("deletar",script("deleteCombo()")));=mesclagem(1,6)60=campo(A4,"Código","code");=inteiro(9);=principal();=serial()61=dados(A7,componente("lineedit"),autoConfirm(0),expressao(execaction(A4,"get","")))62=selecao(A4)64=campo(A4,"Ativo","active");=texto(3);=alinhamento("direita","centro");=default("SIM")65=dados(E7,componente("combobox","SIM","NÃO"))70=campo(A4,"Descrição","description");=texto(40)71=dados(A8,componente("lineedit"));=mesclagem(1,4)80=campo(A4,"Preço de Venda","price");=decimal(8.200000);=mesclagem(1,2);=mascara("R$ %.2f")82=dados(A9,componente("lineedit"));=mesclagem(1,2)100=label("Itens do Combo");=mesclagem(1,3);=fonte("Application",8,1,0);=alinhamento("esquerda","inferior")103=label("Sub-Total");=mesclagem(1,2);=fonte("Application",8,0,0);=alinhamento("direita","inferior")105=label("R$   0,00");=mesclagem(1,1);=fonte("Application",8,0,0);=alinhamento("direita","inferior")110=lista2(ativo(0));=mesclagem(5,6)160=label("Itens Dísponiveis");=mesclagem(1,5);=fonte("Application",8,1,0);=alinhamento("esquerda","centro")165=botao("",expressao(script("returnItem()")),imagem("0xe786"));=mesclagem(1,1)170=lista2(ativo(1));=mesclagem(4,2)172=lista2(ativo(1));=mesclagem(4,4)210=campo(A4,"Preparação","preparation");=texto(10);=alinhamento("direita","centro");=mesclagem(1,1)211=dados(A22,componente("lineedit"),ativo(0));=mesclagem(1,2)213=campo(A4,"Disponibilizar Adicionais","additional");=texto(10);=alinhamento("esquerda","centro");=default("NÃO");=mesclagem(1,2)215=dados(D22,componente("lineedit"),ativo(0))

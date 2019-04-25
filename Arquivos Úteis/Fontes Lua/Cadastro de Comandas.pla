@@ -1,0 +1,7 @@
+0.0.0.1000619201040969624apprunfunction apprun()
+  hrcli:execaction("A1","last","")
+ endtitleGuestCheckfunction titleGuestCheck()
+  if (hrcli:getModo("A1")=="update") then
+   hrcli:enabled("C5",false)
+  end
+ end00=titulo("Cadastro de Comandas","guestcheck",expressao(script("titleGuestCheck()")));=mesclagem(1,3);=fonte("Application",9,1,1)03=modo(A1);=mesclagem(1,3)10=navegacao(A1);=mesclagem(1,6)30=campo(A1,"Código","code");=inteiro(9);=principal();=serial()31=dados(A4,componente("lineedit"),autoConfirm(1),expressao(execaction(A1,"get","")))32=selecao(A1)40=campo(A1,"Código de Barras","barcode");=texto(10);=mesclagem(1,2)42=dados(A5,componente("lineedit"));=mesclagem(1,2)44=campo(A1,"Ativo","active");=texto(3);=alinhamento("direita","centro");=default("SIM")45=dados(E5,componente("combobox","SIM","NÃO"))

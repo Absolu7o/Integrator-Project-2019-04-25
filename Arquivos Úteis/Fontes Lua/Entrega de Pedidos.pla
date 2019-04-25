@@ -1,0 +1,438 @@
+0.0.2.100062361$0.0.2.10006136672896960301463074111414141740813835897859611070113312631383101script("c.timeRefresh()")00=label("Entrega de Pedidos");=mesclagem(1,7);=fonte("Application",9,1,1)08=label("Atualizado");=mesclagem(1,2);=alinhamento("direita","centro")010=label("");=alinhamento("direita","centro")011=botao("",expressao(script("c.refreshList()")),imagem("0xe77c"))012=botao("Sem filtros",expressao(script("c.filter()")),imagem("0xe78f"));=mesclagem(1,2)20=lista2(ativo(1));=mesclagem(4,14)60=label("Detalhes do Item");=mesclagem(1,2);=fonte("Application",9,1,1)62=label("");=mesclagem(1,8);=fonte("Application",8,0,0);=alinhamento("esquerda","centro")613=botao("",expressao(script("c.returnList()")),imagem("0xe786"));=mesclagem(1,1)80=label("Categoria");=mesclagem(1,1);=fonte("Application",9,1,0);=alinhamento("direita","centro")81=label("");=mesclagem(1,3);=fonte("Application",9,0,0);=alinhamento("centro","centro")84=label("Status");=mesclagem(1,1);=fonte("Application",9,1,0);=alinhamento("direita","centro")85=label("");=mesclagem(1,2);=fonte("Application",9,0,0);=alinhamento("centro","centro")87=label("Atualizado");=mesclagem(1,1);=fonte("Application",9,1,0);=alinhamento("direita","centro")88=label("");=mesclagem(1,3);=fonte("Application",9,0,0);=alinhamento("centro","centro")90=label("Item");=mesclagem(1,1);=fonte("Application",9,1,0);=alinhamento("direita","centro")91=label("");=mesclagem(1,3);=fonte("Application",9,0,0);=alinhamento("centro","centro")95=label("Quantidade");=mesclagem(1,1);=fonte("Application",9,1,0);=alinhamento("direita","centro")96=label("");=mesclagem(1,1);=fonte("Application",9,0,0);=alinhamento("centro","centro")101=label("Itens do Combo / Adicionais");=mesclagem(1,4);=fonte("Application",9,1,0);=alinhamento("esquerda","centro")106=label("Anotação");=mesclagem(1,4);=fonte("Application",9,1,0);=alinhamento("esquerda","centro")1012=botao("Att. Status",expressao(script("c.updateStatus()")));=mesclagem(2,2)111=lista2(ativo(0));=mesclagem(5,4)116=text(texto(150),ativo(0));=mesclagem(5,4)160=label("Filtro por categoria");=mesclagem(1,3);=fonte("Application",9,1,1)163=botao("",expressao(script("c.refreshReturnList()")),imagem("0xe786"));=mesclagem(1,1)180=lista2(ativo(1));=mesclagem(5,4)
+0$
+16604$c.apprun=function()
+ hrcli:enabled("L1",true)
+ hrcli:enabled("M1",true)
+ hrcli:enabled("N7",true)
+ hrcli:enabled("D17",true)
+ hrcli:setRowStretch(3) 
+ hrcli:setRowStretch(19)
+ --
+ c.listItem=QPlaListWidget("A3")
+ c.listItem:connectClicked("c.clickedItem(index)")
+ c.listItem:connectDoubleClicked("c.doubleClickedItem(index)")
+ c.listAddComboItem=QPlaListWidget("B12")
+ c.listCategoryFilter=QPlaListWidget("A19")
+ c.listCategoryFilter:connectClicked("c.selectCategoryFilter(index)")
+ --
+ c.ususer=hrcli:getVariavel("currentuser")
+ c.dateTimeNow=SDateTime()
+ c.categoryFilterCode=SString()
+ c.lastItemAdd=nil
+ c.codeRequestItem=nil
+ c.codeListAdd={}
+ c.autoRefresh=false
+ c.removeRow=false
+ --
+ c.form2(false)
+ c.form3(false)
+ --
+ c.dateTimeNow:set(hrcli:getVariavel("current"),"yyyy-MM-dd hh:mm:ss")
+ c.loadFilterChosen()
+ c.refreshList()
+ c.autoRefresh=true 
+end
+
+c.loadFilterChosen=function()
+ local query=SDBQuery()
+ local strCode=SString()
+ --
+ c.categoryFilterCode:clear()
+ --
+ query:setSQL("select fil.code_category from filterhistory fil where (fil.ususer_usu001=".. c.ususer ..")")
+ if (hrsrv:sqlExec(query:self())==true) then
+  while (query:nextResult()==true) do
+   strCode:cat(query:fieldInteger(0) ..",")
+  end
+ end
+ --
+ if (strCode:length()>0) then
+  strCode:realloc(strCode:length()-1)
+  c.categoryFilterCode:copy(" and (cat.code in (".. strCode:array() .."))")
+  hrcli:valor("M1","Filtrando")
+ else
+  hrcli:valor("M1","Filtros")
+ end
+end
+
+c.listAdd=function(item,requestItemCode,requestCode,tableDescription,category,itemDescription,countitem,status,note,countAdd,timeInsert,dateTimeUpdate)
+ local query=SDBQuery()
+ local subItem=QPlaListWidgetSubItem()
+ local strTime=SString()
+ local dateTime=SDateTime()
+ local time=SDateTime()
+ local font=QFont()
+ local fontBold=QFont()
+ local alingnRight=QFlagAlignment()
+ local alingnCenter=QFlagAlignment()
+ local totalTime=nil
+ local additional=SString()
+ local color=QColor()
+ --
+ font:set("Application",9,false,false)
+ fontBold:set("Application",9,true,false)
+ alingnRight:set(alingnRight:vCenter()|alingnRight:hRight())
+ alingnCenter:set(alingnCenter:vCenter()|alingnCenter:hCenter())
+ color:set("#FF0000")
+ --
+ dateTime:set(dateTimeUpdate,"yyyy-MM-dd hh:mm:ss")
+ time:set(timeInsert,"hh:mm:ss")
+ strTime:copy(timeInsert)
+ --
+ if (strTime:length()==8) then --Retornou 'hh:mm:ss'
+  if (time:toInt("hh")>0) then
+   totalTime=time:toString("hh:mm") .." horas"
+  else
+   totalTime=time:toInt("mm") .." minutos"
+  end
+ else
+  totalTime="+1 Dia"
+ end
+ --
+ subItem:pointer(item:addLabel("Ped. ",1,1,2,1))
+ subItem:setFont(fontBold:self())
+ subItem:pointer(item:addLabel(requestCode .."-".. requestItemCode,1,2,2,1))
+ subItem:setFont(font:self())
+ --
+ subItem:pointer(item:addLabel("Mesa ",1,3,2,1))
+ subItem:setFont(fontBold:self())
+ subItem:pointer(item:addLabel(tableDescription,1,4,2,1))
+ subItem:setFont(font:self())
+ --
+ subItem:pointer(item:addLabel(category,1,5,2,2))
+ subItem:setFont(fontBold:self())
+ subItem:setAlignment(alingnCenter:self())
+ subItem:pointer(item:addLabel(itemDescription,1,7,2,4))
+ subItem:setFont(font:self())
+ subItem:pointer(item:addLabel("x ".. countitem,1,11,2,1))
+ subItem:setFont(font:self())
+ subItem:pointer(item:addLabel(status,1,12,2,2))
+ subItem:setFont(fontBold:self())
+ subItem:setAlignment(alingnCenter:self())
+ subItem:pointer(item:addIcon("0xe77c",18,18,1,14,2,1))
+ subItem:setAlignment(alingnRight:self())
+ subItem:pointer(item:addLabel(dateTime:toString("hh:mm:ss"),1,15,2,2)) --HORA
+ subItem:setFont(font:self())
+ if ((time:toInt("hh")>0) or (time:toInt("mm")>15)) then
+  item:addIcon("0xe601",18,18,1,17,2,1)
+  subItem:pointer(item:addLabel(totalTime,1,18,2,2)) --HORA
+  subItem:setFont(font:self())
+  subItem:setColor(color:self())
+ else
+  item:addIcon("0xe71d",18,18,1,17,2,1)
+  subItem:pointer(item:addLabel(totalTime,1,18,2,2)) --HORA
+  subItem:setFont(font:self())
+ end
+ --
+ if (countAdd>0) then
+  item:addIcon("0xe6f1",18,18,1,20,2,1)
+ else
+  item:addIcon("",18,18,1,20,2,1)
+ end
+ if (note~="") then
+  item:addIcon("0xe6eb",18,18,1,21,2,1)
+ else
+  item:addIcon("",18,18,1,21,2,1)
+ end
+end
+
+c.refreshList=function()
+ local query=SDBQuery()
+ local item=QPlaListWidgetItem()
+ local dateTime=SDateTime()
+ --
+ c.listItem:clear()
+ c.codeListAdd={}
+ c.lastItemAdd=nil
+ --
+ query:setSQL("select rqi.code,req.code,tab.description,cat.description,ite.description,rqi.countitem,rqi.status,rqi.note,count(add.code),(hr_now()-rqi.datetimeins),rqi.datetimeupd,rqi.datetimeins from requestitem rqi join request req on (rqi.code_request=req.code) join tablelist tab on (req.code_tablelist=tab.code) join item ite on (rqi.code_item=ite.code) join category cat on (ite.code_category=cat.code) left join requestadditionalitem rqa on (rqi.code=rqa.code_requestitem) left join additional add on (rqa.code_additional=add.code) where (rqi.datetimeins between '".. c.dateTimeNow:toString("yyyy-MM-dd") .." 00:00:00' and '".. c.dateTimeNow:toString("yyyy-MM-dd") .." 23:59:59') and (rqi.status in ('Aguardando','Cancelado')) and (rqi.check_requeststart='t')".. c.categoryFilterCode:array() .." group by rqi.code,req.code,tab.code,cat.code,ite.code order by rqi.code desc")
+ if (hrsrv:sqlExec(query:self())==true) then
+  while (query:nextResult()==true) do
+   item:pointer(g.listItem:add(query:fieldInteger(0)))
+   c.listAdd(item,query:fieldInteger(0),query:fieldInteger(1),query:fieldString(2),query:fieldString(3),query:fieldString(4),query:fieldInteger(5),query:fieldString(6),query:fieldString(7),query:fieldInteger(8),query:fieldString(9),query:fieldString(10))
+   --
+   if (c.lastItemAdd==nil) then
+    c.lastItemAdd=query:fieldString(11)
+   end
+   c.codeListAdd[query:fieldInteger(0)]=""
+  end
+ end
+ --
+ c.listItem:runList()
+ dateTime:set(hrcli:getVariavel("current"),"yyyy-MM-dd hh:mm:ss")
+ hrcli:valor("K1",dateTime:toString("hh:mm:ss"))
+end
+
+c.timeRefresh=function()
+ local query=SDBQuery()
+ local item=QPlaListWidgetItem()
+ local dateTime=SDateTime()
+ local strCode=SString()
+ --
+ if (c.autoRefresh==true) then
+  if (c.lastItemAdd~=nil) then
+   for key,value in pairs(c.codeListAdd) do
+		  strCode:cat(key ..",")
+		 end
+		 --Atualiza itens da lista
+		 if (strCode:length()>0) then
+		  strCode:realloc(strCode:length()-1)
+		  --
+		  query:setSQL("select rqi.code,req.code,tab.description,cat.description,ite.description,rqi.countitem,rqi.status,rqi.note,count(add.code),(hr_now()-rqi.datetimeins),rqi.datetimeupd,rqi.datetimeins from requestitem rqi join request req on (rqi.code_request=req.code) join tablelist tab on (req.code_tablelist=tab.code) join item ite on (rqi.code_item=ite.code) join category cat on (ite.code_category=cat.code) left join requestadditionalitem rqa on (rqi.code=rqa.code_requestitem) left join additional add on (rqa.code_additional=add.code) where (rqi.code in (".. strCode:array() ..")) group by rqi.code,req.code,tab.code,cat.code,ite.code")
+		  if (hrsrv:sqlExec(query:self())==true) then
+		   while (query:nextResult()==true) do
+		    item:pointer(g.listItem:getItemForUpdate(g.listItem:rowFind(query:fieldInteger(0))))
+      c.listAdd(item,query:fieldInteger(0),query:fieldInteger(1),query:fieldString(2),query:fieldString(3),query:fieldString(4),query:fieldInteger(5),query:fieldString(6),query:fieldString(7),query:fieldInteger(8),query:fieldString(9),query:fieldString(10))
+		   end
+		  end
+		 end
+	  --Adiciona itens Novos
+		 query:setSQL("select rqi.code,req.code,tab.description,cat.description,ite.description,rqi.countitem,rqi.status,rqi.note,count(add.description),(hr_now()-rqi.datetimeins),rqi.datetimeupd,rqi.datetimeins from requestitem rqi join request req on (rqi.code_request=req.code) join tablelist tab on (req.code_tablelist=tab.code) join item ite on (rqi.code_item=ite.code) join category cat on (ite.code_category=cat.code) left join requestadditionalitem rqa on (rqi.code=rqa.code_requestitem) left join additional add on (rqa.code_additional=add.code) where (rqi.datetimeins>'".. c.lastItemAdd .."') and (rqi.status in ('Aguardando','Cancelado')) and (rqi.check_requeststart='t')".. c.categoryFilterCode:array() .." group by rqi.code,req.code,tab.code,cat.code,ite.code order by rqi.datetimeins")
+		 if (hrsrv:sqlExec(query:self())==true) then
+		  while (query:nextResult()==true) do
+		   item:pointer(g.listItem:addFirst(query:fieldInteger(0)))
+     c.listAdd(item,query:fieldInteger(0),query:fieldInteger(1),query:fieldString(2),query:fieldString(3),query:fieldString(4),query:fieldInteger(5),query:fieldString(6),query:fieldString(7),query:fieldInteger(8),query:fieldString(9),query:fieldString(10))
+		   --
+		   c.lastItemAdd=query:fieldString(11)
+		   c.codeListAdd[query:fieldInteger(0)]=""
+		  end
+		 end
+		 --
+		 c.listItem:runList()
+		 dateTime:set(hrcli:getVariavel("current"),"yyyy-MM-dd hh:mm:ss")
+		 hrcli:valor("K1",dateTime:toString("hh:mm:ss"))
+  else
+   c.refreshList()
+	 end
+ end
+end
+
+c.doubleClickedItem=function(index)
+ local query=SDBQuery()
+ local item=QPlaListWidgetItem()
+ local status=nil
+ local description=nil
+ local res=nil
+ --
+ c.autoRefresh=false
+ --
+ query:setSQL("select rqi.status,ite.description from requestitem rqi join item ite on (rqi.code_item=ite.code) where (rqi.code=".. index ..")")
+ if (hrsrv:sqlExec(query:self())==true) then
+  if (query:nextResult()==true) then
+   status=query:fieldString(0)
+   description=query:fieldString(1)
+  end
+ end
+ --
+ if (status~=nil) then
+  if (status=="Aguardando") then
+   res=hrcli:showConfirmacao("dialog","?","1002","Entregar Item","Entregar item '".. description .."'?","Sim|Não")
+   if (res=="1") then
+    query:setSQL("update requestitem set status='Entregue' where (code=".. index ..")")
+    if (hrsrv:sqlExec(query:self())==true) then
+     g.listItem:removeRow(g.listItem:rowFind(index))
+     c.removeRow=true
+     --
+     c.codeListAdd[index]=nil
+     hrcli:mensagem("1","status","V","1","Item Entregue","Item '".. description .."' teve entrega realizada","erro","")
+    end
+   end
+  elseif (status=="Cancelado") then
+   hrcli:mensagem("1","dialog","X","1","Item Cancelado","Item selecionado foi cancelado","erro","")
+  else
+   hrcli:mensagem("1","dialog","X","1","Algo deu errado","Isso não deveria ter acontecdio, tente novamente","erro","")
+  end
+ end
+ --
+ c.autoRefresh=true
+end
+
+c.clickedItem=function(index)
+ local query=SDBQuery()
+ local item=QPlaListWidgetItem()
+ local subItem=QPlaListWidgetSubItem()
+ local dateTimeIns=SDateTime()
+ local dateTimeUpd=SDateTime()
+ local alignRight=QFlagAlignment()
+ local codeRequestItem=nil
+ local codeCategory=nil
+ local codeItem=nil
+ local status=nil
+ --
+ c.codeRequestItem=index
+ c.autoRefresh=false
+ c.listAddComboItem:clear()
+ hrcli:valor("C7","")
+ hrcli:valor("F9","")
+ hrcli:valor("I9","")
+ hrcli:valor("B9","")
+ hrcli:valor("B10","")
+ hrcli:valor("B11","")
+ hrcli:valor("G10","")
+ hrcli:valor("G12","")
+ --
+ alignRight:set(alignRight:vCenter()|alignRight:hRight())
+ --
+ c.form1(false)
+ c.form2(true)
+ --
+ query:setSQL("select rqi.code,req.code,rqi.datetimeins,rqi.status,rqi.datetimeupd,cat.description,ite.description,rqi.countitem,rqi.note,cat.code,ite.code from requestitem rqi join request req on (rqi.code_request=req.code) join tablelist tab on (req.code_tablelist=tab.code) join item ite on (rqi.code_item=ite.code) join category cat on (ite.code_category=cat.code) left join requestadditionalitem rqa on (rqi.code=rqa.code_requestitem) left join additional add on (rqa.code_additional=add.code) where (rqi.code=".. index ..")")
+ if (hrsrv:sqlExec(query:self())==true) then
+  if (query:nextResult()==true) then
+   codeRequestItem=query:fieldInteger(0)
+   codeCategory=query:fieldInteger(9)
+   codeItem=query:fieldInteger(10)
+   status=query:fieldString(3)
+   dateTimeIns:set(query:fieldString(2),"yyyy-MM-dd hh:mm:ss")
+   dateTimeUpd:set(query:fieldString(4),"yyyy-MM-dd hh:mm:ss")
+   --
+   hrcli:enabled("M11",((status~="Cancelado")))
+   --
+   hrcli:valor("C7","Pedido: ".. query:fieldInteger(1) .." Item: ".. query:fieldInteger(0) .." - Adicionado: ".. dateTimeIns:toString("dd/MM/yyyy hh:mm:ss") .."")
+   hrcli:valor("F9",status)
+   hrcli:valor("I9",dateTimeUpd:toString("dd/MM/yyyy hh:mm:ss"))
+   hrcli:valor("B9",query:fieldString(5))
+   hrcli:valor("B10",query:fieldString(6))
+   hrcli:valor("G10",query:fieldInteger(7))
+   hrcli:valor("G12",query:fieldString(8))
+   --
+   if (codeCategory==1) then
+    hrcli:valor("B11","Itens do Combo")
+    --
+    query:setSQL("select ite.description,cbi.countitem from comboitem cbi join item ite on (cbi.code_item=ite.code) where (cbi.code_comboitem=".. codeItem ..")")
+    if (hrsrv:sqlExec(query:self())==true) then
+     while (query:nextResult()==true) do
+      item:pointer(c.listAddComboItem:add(-1))
+      subItem:pointer(item:addLabel(query:fieldString(0),1,1,1,5))
+      subItem:pointer(item:addLabel("x ".. query:fieldInteger(1),1,6,1,1))
+      subItem:setAlignment(alignRight:self())
+     end
+     c.listAddComboItem:runList()
+    end
+   else
+    hrcli:valor("B11","Adicionais")
+    --
+    query:setSQL("select add.description from requestadditionalitem rqa join additional add on (rqa.code_additional=add.code) where (rqa.code_requestitem=".. codeRequestItem ..")")
+    if (hrsrv:sqlExec(query:self())==true) then
+     while (query:nextResult()==true) do
+      item:pointer(c.listAddComboItem:add(-1))
+      subItem:pointer(item:addLabel(query:fieldString(0),1,1,1,1))
+     end
+    end
+    c.listAddComboItem:runList()
+   end
+  end      
+ end
+end
+
+c.updateStatus=function()
+ c.removeRow=false
+ --
+ c.doubleClickedItem(c.codeRequestItem)
+ if (c.removeRow==true) then
+  c.returnList()
+ end
+end
+
+c.returnList=function()
+ c.form1(true)
+ c.form2(false)
+ c.form3(false)
+ --
+ c.autoRefresh=true
+end
+
+c.filter=function()
+ local query=SDBQuery()
+ local item=QPlaListWidgetItem()
+ local subItem=QPlaListWidgetSubItem()
+ local codeCategory=SString()
+ local filter=""
+ --
+ c.listCategoryFilter:clear()
+ --
+ c.form1(false)
+ c.form3(true)
+ --
+ query:setSQL("select cat.code,cat.description from category cat join filterhistory fil on (cat.code=fil.code_category) where (fil.ususer_usu001=".. c.ususer ..") order by cat.code")
+ if (hrsrv:sqlExec(query:self())==true) then
+  while (query:nextResult()==true) do
+   item:pointer(c.listCategoryFilter:add(query:fieldInteger(0)))
+	  subItem:pointer(item:addLabel(query:fieldString(1),1,1,1,3))
+	  item:addIcon("0xe766",24,24,1,4,1,1)
+   --
+   codeCategory:cat(query:fieldInteger(0) ..",")
+  end
+ end
+ --
+ if (codeCategory:length()>0) then
+  codeCategory:realloc(codeCategory:length()-1)
+  filter=" where (code not in (".. codeCategory:array() .."))"
+ end
+ --
+ query:setSQL("select code,description from category".. filter .." order by code")
+ if (hrsrv:sqlExec(query:self())==true) then
+  while (query:nextResult()==true) do
+   item:pointer(c.listCategoryFilter:add(query:fieldInteger(0)))
+	  subItem:pointer(item:addLabel(query:fieldString(1),1,1,1,3))
+	  item:addIcon("",24,24,1,4,1,1)
+  end
+ end
+ --
+ c.listCategoryFilter:runList()
+end
+
+c.selectCategoryFilter=function(index)
+ local query=SDBQuery()
+ local item=QPlaListWidgetItem()
+ local subItem=QPlaListWidgetSubItem()
+ --
+ hrsrv:sqlBegin()
+ --
+ query:setSQL("select code from filterhistory where (code_category=".. index ..") and (ususer_usu001=".. c.ususer ..")")
+ hrsrv:sqlExec(query:self())
+ if (query:nextResult()==true) then
+  query:setSQL("delete from filterhistory where (code=".. query:fieldInteger(0) ..")")
+  hrsrv:sqlExec(query:self())
+  --
+  query:setSQL("select description from category where (code=".. index ..")")
+  hrsrv:sqlExec(query:self())
+  if (query:nextResult()==true) then
+   item:pointer(c.listCategoryFilter:getItemForUpdate(c.listCategoryFilter:rowFind(index)))
+   subItem:pointer(item:addLabel(query:fieldString(0),1,1,1,3))
+   item:addIcon("",24,24,1,4,1,1)
+  end
+ else
+  query:setSQL("insert into filterhistory (code,code_category,ususer_usu001) values (hr_nextval('filterhistory_code_seq'),".. index ..",".. c.ususer ..")")
+  hrsrv:sqlExec(query:self())
+  --
+  query:setSQL("select description from category where (code=".. index ..")")
+  hrsrv:sqlExec(query:self())
+  if (query:nextResult()==true) then
+   item:pointer(c.listCategoryFilter:getItemForUpdate(c.listCategoryFilter:rowFind(index)))
+   subItem:pointer(item:addLabel(query:fieldString(0),1,1,1,3))
+   item:addIcon("0xe766",24,24,1,4,1,1)
+  end
+ end
+ --
+ hrsrv:sqlCommit()
+ c.listCategoryFilter:runList()
+end
+
+c.refreshReturnList=function()
+ c.returnList()
+ c.loadFilterChosen()
+ c.refreshList()
+end
+
+c.form1=function(bool)
+ hrcli:linhavisivel(1,6,bool)
+end
+
+c.form2=function(bool)
+ hrcli:linhavisivel(7,10,bool)
+end
+
+c.form3=function(bool)
+ hrcli:linhavisivel(17,7,bool)
+end

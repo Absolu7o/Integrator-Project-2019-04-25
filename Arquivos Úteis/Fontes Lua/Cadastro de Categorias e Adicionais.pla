@@ -1,0 +1,76 @@
+0.0.0.1000619201040969624548412413301430apprunfunction apprun()
+  g.listResume=QPlaListWidget("A16")
+  --
+  hrcli:script("form1(true)")
+  hrcli:script("form2(false)")
+  --
+  hrcli:execaction("A1","last","")
+  hrcli:setRowStretch(17)
+  hrcli:enabled("F14",true)
+  hrcli:enabled("E15",true)
+  hrcli:enabled("F15",true)
+  -- 
+  g.loadList=function()
+   local query=SDBQuery()
+   local item=QPlaListWidgetItem()
+   local price=SString()
+   local codeCategory=0
+   --
+   g.listResume:clear()
+   --
+   query:setSQL("select cat.code,cat.description,add.code,add.description,add.price from category cat join additional add on (cat.code=add.code_category) order by cat.code,add.code")
+   if (hrsrv:sqlExec(query:self())==true) then
+    while (query:nextResult()==true) do
+     if (query:fieldInteger(0)~=codeCategory) then
+      codeCategory=query:fieldInteger(0)
+      item:pointer(g.listResume:add(query:fieldInteger(0)))
+      item:addLabel(query:fieldInteger(0) ..". ".. query:fieldString(1),1,1,1,4)
+     end
+     price:fmtCopy("R$ %.2f",query:fieldDecimal(4))
+     --
+     item:pointer(g.listResume:add(query:fieldInteger(2)))
+     item:addLabel(query:fieldInteger(2) ..". ".. query:fieldString(3),1,2,1,2)
+     item:addLabel(price:array(),1,4,1,1)
+    end
+    g.listResume:runList()
+   end
+  end
+  --
+  g.loadList()
+ enddeleteAdditionalfunction deleteAdditional()
+  local query=SDBQuery()
+  local codeAdditional=hrcli:getValor("B10")
+  local confirm=nil
+  --
+  confirm=hrcli:showConfirmacao("dialog","?","1002","Atenção","Deseja realmente excluir o Adicional selecionado?","Sim|Não")
+  if (confirm=="1") then
+   query:setSQL("select 1 from requestadditionalitem where (code_additional=".. codeAdditional ..") limit 1")
+   if (hrsrv:sqlExec(query:self())==true) then
+    if (query:nextResult()==true) then
+     hrcli:mensagem("1","dialog","X","1","Não foi possível excluir","Adicional selecionado já foi utilizado em um ou mais pedidos. Se desejar, o Adicional pode ser desabilitado (Campo 'Ativo').")
+    else
+     hrsrv:sqlBegin("dialog","V","Adicional Excluido","Adicional foi excluido com sucesso")
+     --
+     query:setSQL("delete from additional where (code=".. codeAdditional ..")")
+     hrsrv:sqlExec(query:self())
+     --
+     hrsrv:sqlCommit()
+    end
+   end  
+  end
+ endbtnRefreshListfunction btnRefreshList()
+  g.loadList()
+ endbtnShowListfunction btnShowList(bool)
+  if (bool==true) then
+   hrcli:script("form1(false)")
+   hrcli:script("form2(true)")
+   g.loadList()
+  else
+   hrcli:script("form1(true)")
+   hrcli:script("form2(false)")
+  end
+ endform1function form1(bool)
+  hrcli:linhavisivel(14,1,bool)
+ endform2function form2(bool)
+  hrcli:linhavisivel(15,5,bool)
+ end00=titulo("Cadastro de Categorias","category");=mesclagem(1,3);=fonte("Application",9,1,1);=filtrofixo("code","inteiro","<>","1")03=modo(A1);=mesclagem(1,3)10=navegacao(A1);=mesclagem(1,6)30=campo(A1,"Código","code");=inteiro(9);=principal();=serial()31=dados(A4,componente("lineedit"),autoConfirm(1),expressao(execaction(A1,"get","")))32=selecao(A1)40=campo(A1,"Descrição","description");=texto(40)41=dados(A5,componente("lineedit"));=mesclagem(1,4)60=titulo("Cadastro de Adicionais","additional",ligacao(A1,"code_category"));=mesclagem(1,3);=fonte("Application",9,1,1)63=modo(A7);=mesclagem(1,3)70=navegacao(A7,navexpressao("deletar",script("deleteAdditional()")));=mesclagem(1,6)90=campo(A7,"Código","code");=inteiro(9);=principal();=serial()91=dados(A10,componente("lineedit"),autoConfirm(1),expressao(execaction(A7,"get","")))92=selecao(A7)93=campo(A7,"Ativo","active");=texto(3);=alinhamento("direita","centro");=default("SIM");=mesclagem(1,2)95=dados(D10,componente("combobox","SIM","NÃO"))100=campo(A7,"Descrição","description");=texto(40)101=dados(A11,componente("lineedit"));=mesclagem(1,4)110=campo(A7,"Preço","price");=mascara("R$ %.2f");=decimal(8.200000)111=dados(A12,componente("lineedit"))130=label("Adicionais por Categoria");=mesclagem(1,4);=fonte("Application",9,1,1)134=botao("",expressao(script("btnRefreshList()")),imagem("0xe77c"))135=botao("",expressao(script("btnShowList(true)")),imagem("0xe66b"));=mesclagem(1,1)140=label("Adicionais por Categoria");=mesclagem(1,4);=fonte("Application",9,1,1)144=botao("",expressao(script("btnRefreshList()")),imagem("0xe77c"))145=botao("",expressao(script("btnShowList(false)")),imagem("0xe69c"))150=lista2(ativo(1));=mesclagem(4,6)

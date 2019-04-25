@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 25/04/2019 00:40:21 by Hibernate Tools 4.3.1 -->
+<hibernate-mapping>
+    <class name="model.Additionalitem" table="additionalitem" schema="gcsystem" optimistic-lock="version">
+        <id name="code" type="int">
+            <column name="code" />
+            <generator class="sequence">
+                <param name="sequence">
+                    gcsystem.additionalitem_code_seq
+                </param>
+            </generator>
+        </id>
+        <many-to-one name="additional" class="model.Additional" fetch="select">
+            <column name="code_additional" not-null="true" />
+        </many-to-one>
+        <many-to-one name="item" class="model.Item" fetch="select">
+            <column name="code_item" not-null="true" />
+        </many-to-one>
+    </class>
+</hibernate-mapping>

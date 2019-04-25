@@ -1,0 +1,860 @@
+0.0.2.100063686$0.0.2.100061366728969604133142862473081711171214134114419202020214222827282841294344141284220432044114536461904014024034044054064074000=label("Realização de pedidos");=mesclagem(1,6);=fonte("Application",9,1,1)06=botao("",expressao(script("c.captureBarcode()")),imagem("0xe6de",32,32));=mesclagem(1,2)31=label("Comanda");=mesclagem(1,2);=alinhamento("centro","centro");=fonte("Application",10,0,0)33=edit(texto(10));=mesclagem(1,2);=fonte("Application",10,0,0);=alinhamento("direita","centro")35=botao("",expressao(script("c.findGuestCheck()")),imagem("0xe724",22,22),size(65,30));=mesclagem(1,2)50=label("Entre com uma Comanda");=mesclagem(1,8);=alinhamento("centro","centro")60=label("");=mesclagem(1,8);=alinhamento("centro","centro")82=botao("Criar",expressao(script("c.requestItem()")));=mesclagem(2,4)102=botao("Pedidos",expressao(script("c.viewAllRequest()")));=mesclagem(2,4)130=label("Mesas");=mesclagem(1,6);=fonte("Application",9,1,1)136=botao("",expressao(script("c.backStartMenu()")),imagem("0xe786",30,30));=mesclagem(1,2)150=lista2(ativo(1));=mesclagem(4,8)190=label("INFORMAÇÔES");=mesclagem(1,6)196=botao("",expressao(script("c.discardChangeRequest()")),imagem("0xe786",30,30));=mesclagem(2,2)200=label("INFORMAÇÔES");=mesclagem(1,6)220=label("Adicionar");=mesclagem(1,2)222=edit(inteiro(9));=mesclagem(1,2);=fonte("Application",10,0,0);=alinhamento("direita","centro")224=botao("",expressao(script("c.addItem(-1)")),imagem("0xe760",22,22),size(62,28));=mesclagem(1,2)227=botao("",expressao(script("c.refreshRequestItem()")),imagem("0xe77c",22,22),size(0,28))230=lista2(ativo(1));=mesclagem(4,8)270=botao("Cardápio",expressao(script("c.viewItemMenu()")),size(0,28));=mesclagem(1,3)275=botao("Confirmar",expressao(script("c.completeRequest()")),size(0,28));=mesclagem(1,3)280=label("Cardápio");=mesclagem(1,6);=fonte("Application",9,1,1)286=botao("",expressao(script("c.backRequest()")),imagem("0xe786",30,30));=mesclagem(1,2)300=lista2(ativo(1));=mesclagem(4,3)303=lista2(ativo(1));=mesclagem(4,5)340=label("Seleção de Adicionais");=mesclagem(1,6);=fonte("Application",9,1,1)346=botao("",expressao(script("c.backRequest()")),imagem("0xe786",30,30));=mesclagem(1,2)350=label("INFORMAÇÔES");=mesclagem(1,8)360=label("Disponivel");=mesclagem(1,4)364=label("Selecionado");=mesclagem(1,4)370=lista2(ativo(1));=mesclagem(4,4)374=lista2(ativo(1));=mesclagem(4,4)410=botao("Cancelar",expressao(script("c.backRequest()")),size(0,28));=mesclagem(1,3)415=botao("Confirmar",expressao(script("c.aditionalConfirm()")),size(0,28));=mesclagem(1,3)420=label("");=mesclagem(1,6);=fonte("Application",9,1,0)426=botao("",expressao(script("c.backRequest()")),imagem("0xe786",30,30));=mesclagem(2,2)430=label("");=mesclagem(1,6)450=label("Quantidade");=mesclagem(1,2);=fonte("Application",9,1,1)452=edit(inteiro(2),ativo(0));=alinhamento("direita","centro");=fonte("Application",10,0,0)454=botao("",expressao(script("c.cancelItem()")),imagem("0xe73f",26,26),size(0,26));=mesclagem(1,1)455=botao("",expressao(script("c.editItem()")),imagem("0xe6d9",26,26),size(0,26));=mesclagem(1,1)456=botao("",expressao(script("c.confirmEditItem()")),imagem("0xe766",26,26),size(0,26));=mesclagem(1,1)457=botao("",expressao(script("c.cancelEditItem()")),imagem("0xe765",26,26),size(0,26));=mesclagem(1,1)460=label("Anotação");=mesclagem(1,2);=alinhamento("esquerda","inferior");=fonte("Application",9,1,1)470=text(texto(150),ativo(0));=mesclagem(3,8)500=qml();=mesclagem(4,8)
+0$
+26420$c.apprun=function()
+ c.listRequest=QPlaListWidget("A16")
+ c.listRequestItem=QPlaListWidget("A24")
+ c.listCategory=QPlaListWidget("A31")
+ c.listItem=QPlaListWidget("D31")
+ c.listAddAvailable=QPlaListWidget("A38")
+ c.listAddChosen=QPlaListWidget("E38")
+ --
+ c.listRequest:connectClicked("c.clickedRequest(index)")
+ c.listRequestItem:connectClicked("c.clickedRequestItem(index)")
+ c.listRequestItem:connectDoubleClicked("c.doubleClickedRequestItem(index)")
+ c.listCategory:connectClicked("c.clickedCategory(index)")
+ c.listItem:connectClicked("c.clickedItem(index)")
+ c.listAddAvailable:connectClicked("c.clickedAddAvailable(index)")
+ c.listAddChosen:connectClicked("c.clickedAddChosen(index)")
+ --
+ c.barcodeLenghtMin=1
+ c.barcodeLenghtMax=10
+ c.device=SPlgDevice()
+ c.qml=SPlgQml("A51")
+ c.qml:connect("completed","c.completed()")
+ c.qml:connect("destroyed","c.destroyed()")
+ c.qml:connect("closed","c.closed()")
+ c.qml:connect("imageCaptured","c.imageCaptured(code,path)")
+ c.qml:setProperty("xFactor",0.10)
+ c.qml:setProperty("yFactor",0.40)
+ c.qml:setProperty("wFactor",0.80)
+ c.qml:setProperty("hFactor",0.20)
+ c.qml:setProperty("lenMin",c.barcodeLenghtMin)
+ c.qml:setProperty("lenMax",c.barcodeLenghtMax)
+ hrcli:connectTabShow("c.tabShow()")
+ hrcli:connectTabHide("c.tabHide()")
+ --
+ c.cameraCapturing=false
+ c.codeGuestCheck=nil
+ c.codeRequest=nil
+ c.requestItemIndex=nil
+ c.additionalTable={}
+ --
+ hrcli:setRowStretch(16)
+ hrcli:setRowStretch(24)
+ hrcli:setRowStretch(31)
+ hrcli:setRowStretch(38)
+ hrcli:setRowStretch(48)
+ hrcli:setRowStretch(51)
+ --
+ hrcli:enabled("F4",true)
+ hrcli:enabled("G1",true)
+ hrcli:enabled("C11",true)
+ hrcli:enabled("G14",true)
+ hrcli:enabled("G20",true)
+ hrcli:enabled("E23",true)
+ hrcli:enabled("H23",true)
+ hrcli:enabled("A28",true)
+ hrcli:enabled("F28",true)
+ hrcli:enabled("G29",true)
+ hrcli:enabled("G35",true)
+ hrcli:enabled("A42",true)
+ hrcli:enabled("G43",true)
+ --Teste 1
+ hrcli:enabled("F42",true)
+ --1
+ --
+ c.form2(false)
+ c.form3(false)
+ c.form4(false)
+ c.form5(false)
+ c.form6(false)
+ c.form7(false)
+end
+
+c.tabShow=function()
+ if (c.cameraCapturing==true) then
+  c.device:cpuonAcquire()
+  c.device:lockOrientationLandscape()
+ else
+  c.device:cpuonAcquire()
+ end
+end
+
+c.tabHide=function()
+ c.device:cpuonRelease()
+ c.device:lockOrientationPortrait()
+end
+
+c.loadQml=function()
+ c.cameraCapturing=true
+ c.qml:execute("qrc:///declarative-camera.qml")
+end
+
+c.unloadQml=function()
+ c.qml:execute("")
+ c.cameraCapturing=false
+end
+
+c.captureBarcode=function()
+ hrcli:enabledform(false)
+ c.loadQml()
+end
+
+c.completed=function()
+ hrcli:enabledform(true)
+ --
+ c.qml:call("startDecode")
+ c.device:cpuonAcquire()
+ c.device:lockOrientationLandscape()
+ --
+ c.form1(false)
+ c.form7(true)
+end
+
+c.destroyed=function()
+ c.qml:call("stopDecode")
+ c.device:cpuonRelease()
+ c.device:lockOrientationPortrait()
+end
+
+c.closed=function()
+ c.unloadQml()
+ c.form1(true)
+ c.form7(false)
+end
+
+c.imageCaptured=function(code,path)
+ local barcode=SString()
+ --
+ c.unloadQml()
+ hrcli:removeFile(path)
+ --
+ barcode:copy(code)
+ --
+ c.form1(true)
+ c.form7(false)
+ --
+ if (barcode:length()>0) then
+  c.device:sound("ok")
+  c.device:vibrate(200)
+  --
+  hrcli:valor("D4",barcode:array())
+  c.findGuestCheck()
+ else
+  hrcli:valor("A6","Entre com uma Comanda")
+  hrcli:valor("A7","")
+  hrcli:valor("D4","")
+  hrcli:focus("D4","DADOS")
+  hrcli:sipShow()
+ end
+end
+
+c.loadRequestList=function()
+ local query=SDBQuery()
+ local item=QPlaListWidgetItem()
+ local subItem=QPlaListWidgetSubItem()
+ local dateTime=SDateTime()
+ local alignRight=QFlagAlignment()
+ local fontBold=QFont()
+ local font=QFont()
+ --
+ alignRight:set(alignRight:hRight()|alignRight:vCenter())
+ fontBold:set("Application",8,true,false)
+ font:set("Application",8,false,false)
+ --
+ c.listRequest:clear()
+ c.codeGuestCheck=nil
+ c.codeRequest=nil
+ --
+ query:setSQL("select req.code,tab.description,req.datetimeins,gck.barcode from request req join tablelist tab on (req.code_tablelist=tab.code) join guestcheck gck on (req.code_guestcheck=gck.code) where (tab.active='SIM') and (req.status='Aberto')")
+ if (hrsrv:sqlExec(query:self())==true) then
+  while (query:nextResult()==true) do
+   dateTime:set(query:fieldString(2),"yyyy-MM-dd hh:mm:ss")
+   --
+   item:pointer(c.listRequest:add(query:fieldInteger(0)))
+   item:addIcon("0xe745",18,18,1,1,2,1)
+   subItem:pointer(item:addLabel("Ped.",1,2,2,1))
+   subItem:setFont(fontBold:self())
+   subItem:pointer(item:addLabel(query:fieldInteger(0),1,3,2,2))
+   subItem:setFont(font:self())
+   subItem:pointer(item:addLabel("Mesa",1,5,2,1))
+   subItem:setFont(fontBold:self())
+   subItem:pointer(item:addLabel(query:fieldString(1),1,6,2,2))
+   subItem:setFont(font:self())
+   subItem:pointer(item:addLabel(dateTime:toString("dd/MM/yyyy hh:mm"),1,8,2,3))
+   subItem:setFont(font:self())
+   subItem:setAlignment(alignRight:self())
+  end
+ end
+ --
+ c.listRequest:runList()
+end
+
+c.loadRequestItem=function()
+ local query=SDBQuery()
+ local item=QPlaListWidgetItem()
+ --            
+ query:setSQL("select rqi.code,ite.code,ite.description,ite.price,rqi.countitem,rqi.status,count(rqa.code_requestitem),rqi.note from requestitem rqi join item ite on (rqi.code_item=ite.code) left join requestadditionalitem rqa on (rqi.code=rqa.code_requestitem) where (rqi.code_request=".. c.codeRequest ..") group by rqi.code,ite.code,rqa.code_requestitem order by rqi.code desc")
+ if (hrsrv:sqlExec(query:self())==true) then
+  while (query:nextResult()==true) do
+   item:pointer(c.listRequestItem:add(query:fieldInteger(0)))
+   c.itemAddList(item,query:fieldInteger(1),query:fieldString(2),query:fieldDecimal(3),query:fieldInteger(4),query:fieldString(5),query:fieldInteger(6),query:fieldString(7))
+  end
+ end
+ --
+ c.listRequestItem:runList()
+end
+
+c.viewAllRequest=function()
+ c.form1(false)
+ c.form2(true)
+ --
+ c.loadRequestList()
+end
+
+c.findGuestCheck=function()
+ local query=SDBQuery()
+ local dateTime=SDateTime()
+ local barcode=nil
+ local status=nil
+ --
+ barcode=hrcli:getValor("D4")
+ c.codeGuestCheck=nil
+ c.codeRequest=nil
+ --
+ if (barcode~="") then
+  query:setSQL("select gck.code,req.status,req.code,req.datetimeins,tab.description from guestcheck gck left join request req on (gck.code=req.code_guestcheck) left join tablelist tab on (req.code_tablelist=tab.code) where (gck.barcode='".. barcode .."') and (gck.active='SIM') order by req.code desc limit 1")
+  if (hrsrv:sqlExec(query:self())==true) then
+   if (query:nextResult()==true) then
+    c.codeGuestCheck=query:fieldInteger(0)
+    status=query:fieldString(1)
+    --
+    if (status=="Aberto") then
+     c.codeRequest=query:fieldInteger(2)
+     dateTime:set(query:fieldString(3),"yyyy-MM-dd hh:mm:ss")
+     --
+     hrcli:valor("A6","<b>Pedido:</b> ".. c.codeRequest .."  <b>Mesa:</b> ".. query:fieldString(4))
+     hrcli:valor("A7","<b>Criado</b>: ".. dateTime:toString("dd/MM/yyyy hh:mm"))
+     hrcli:valor("C9","Editar")
+    else
+     hrcli:valor("A6","Nenhum pedido em Aberto")
+     hrcli:valor("A7","")
+     hrcli:valor("C9","Criar")
+    end
+    --
+    hrcli:enabled("C9",true)
+   else
+    hrcli:valor("A6","Comanda não existe")
+    hrcli:valor("A7","")
+    --
+    hrcli:enabled("C9",false)
+   end
+  end
+ else
+  hrcli:valor("A6","Código de comanda inválido")
+  hrcli:focus("D4","DADOS")
+ end
+end
+
+c.requestItem=function()
+ local query=SDBQuery()
+ local tableDescription=""
+ local codeTable=nil
+ local requestCreate=true
+ --
+ if (c.codeRequest==nil) then
+  requestCreate=false
+  --
+  tableDescription=hrcli:showInput("","","Qual a Mesa do pedido?","lineedit","")
+  if (tableDescription~=nil) then
+   if (tableDescription~="") then
+    query:setSQL("select code from tablelist where (description=hr_upper('".. tableDescription .."')) and (active='SIM')")
+    if (hrsrv:sqlExec(query:self())==true) then
+     if (query:nextResult()==true) then
+      codeTable=query:fieldInteger(0)
+      hrsrv:sqlBegin()
+      --
+      query:setSQL("select hr_nextval('request_code_seq')")
+      hrsrv:sqlExec(query:self())
+      if (query:nextResult()==true) then
+       c.codeRequest=query:fieldInteger(0)
+      end
+      --
+      query:setSQL("insert into request (code,status,datetimeins,datetimeend,paymoney,paycard,cardtype,ususer_usu001,code_guestcheck,code_tablelist) values (".. c.codeRequest ..",'Aberto',hr_now(),NULL,NULL,NULL,NULL,NULL,".. c.codeGuestCheck ..",".. codeTable ..")")
+      hrsrv:sqlExec(query:self())
+      --
+      requestCreate=true
+      hrsrv:sqlCommit()
+     else
+      hrcli:mensagem("1","dialog","X","1","Mesa Inválida","Mesa não existe","erro","")
+     end
+    end
+    -- 
+   else
+    hrcli:mensagem("1","dialog","X","1","Valor Inválida","Uma Mesa é necessaria para crição do pedido","erro","")
+   end
+  end
+ end
+ --
+ if (c.codeRequest~=nil) then
+  c.listRequestItem:clear()
+  hrcli:valor("A20","")
+  hrcli:valor("A21","")
+  --
+  c.form1(false)
+  c.form2(false)
+  c.form3(true)
+  --
+  c.getInfoRequest()
+  c.loadRequestItem()
+ elseif (requestCreate==true) then
+  hrcli:mensagem("1","dialog","X","1","Erro ao carregar Pedido","Não foi possível carregar o pedido, tente novamente","erro","")
+ end
+end
+
+c.getInfoRequest=function()
+ local query=SDBQuery()
+ local dateTime=SDateTime()
+ --
+ query:setSQL("select tab.description,req.datetimeins from request req join tablelist tab on (req.code_tablelist=tab.code) where (req.code=".. c.codeRequest ..")")
+ if (hrsrv:sqlExec(query:self())==true) then
+  if (query:nextResult()==true) then
+   dateTime:set(query:fieldString(1),"yyyy-MM-dd hh:mm:ss")
+   --
+   hrcli:valor("A20","<b>Pedido:</b> ".. c.codeRequest .."  <b>Mesa</b>: ".. query:fieldString(0))
+   hrcli:valor("A21","<b>Criado:</b> ".. dateTime:toString("dd/MM/yyyy hh:mm"))
+  end
+ end
+end
+
+c.refreshRequestItem=function()
+ c.listRequestItem:clear()
+ c.loadRequestItem()
+end
+
+c.completeRequest=function()
+ local query=SDBQuery()
+ --
+ query:setSQL("update requestitem set datetimeupd=hr_now(),check_requeststart='t' where (status in ('Aguardando','Preparar')) and (code_request=".. c.codeRequest ..") and (check_requeststart='f')")
+ if (hrsrv:sqlExec(query:self())==true) then
+  hrcli:mensagem("1","dialog","V","1","Itens Liberados","Itens foram liberados para Preparação e Entrega","erro","")
+  c.backStartMenu()
+ end
+end
+
+c.discardChangeRequest=function()
+ local query=SDBQuery()
+ local code=SString()
+ local option=nil
+ local count=0
+ --
+ query:setSQL("select code from requestitem where (status in ('Aguardando','Preparar')) and (code_request=".. c.codeRequest ..") and (check_requeststart='f')")
+ if (hrsrv:sqlExec(query:self())==true) then
+  while (query:nextResult()==true) do
+   code:cat(query:fieldInteger(0) ..",")
+   count=count+1
+  end
+  code:realloc(code:length()-1) --Remove virgula
+ end
+ --
+ if (count>0) then
+  option=hrcli:showInput("","","ATENÇÃO:\nPedido possui ".. ((count>1)and(count .." itens não liberados")or(count .." item não liberado")) ..".\nO que deseja fazer?","radiobutton","Liberar Tudo","Excluir Itens","")
+  if (option~=nil) then
+   if (option=="Liberar Tudo") then
+    query:setSQL("update requestitem set datetimeupd=hr_now(),check_requeststart='t' where (status in ('Aguardando','Preparar')) and (code_request=".. c.codeRequest ..") and (check_requeststart='f')")
+    if (hrsrv:sqlExec(query:self())==true) then
+     hrcli:mensagem("1","dialog","V","1","Itens Liberados","Itens foram liberados para Preparação e Entrega","erro","")
+     c.backStartMenu()
+    end
+   else
+    hrsrv:sqlBegin("dialog","V","Itens Excluidos","Itens foram excluidos com sucesso")
+    --
+    query:setSQL("delete from requestadditionalitem where (code_requestitem in (".. code:array() .."))")
+    hrsrv:sqlExec(query:self())
+    --
+    query:setSQL("delete from requestitem where (status in ('Aguardando','Preparar')) and (code in (".. code:array() .."))")
+    hrsrv:sqlExec(query:self())
+    --
+    hrsrv:sqlCommit()
+    c.backStartMenu()
+   end
+  end
+ else
+  c.backStartMenu()
+ end
+end
+
+c.addItem=function(codeItem)
+ local query=SDBQuery()
+ local item=QPlaListWidgetItem()
+ local nextVal=nil
+ local itemStatus=nil
+ --
+ if (codeItem<0) then
+  codeItem=hrcli:getValor("C23")
+ end
+ --
+ if (codeItem>0) then
+  query:setSQL("select preparation from item where (code=".. codeItem ..")")
+  if (hrsrv:sqlExec(query:self())==true) then
+   if (query:nextResult()==true) then
+    itemStatus=((query:fieldString(0)=="Pronto")and("Aguardando")or("Preparar"))
+    --
+    query:setSQL("select hr_nextval('requestitem_code_seq')")
+		  if (hrsrv:sqlExec(query:self())==true) then
+		   if (query:nextResult()==true) then
+      nextVal=query:fieldInteger(0)
+      --
+		    query:setSQL("insert into requestitem (code,status,countitem,note,check_requeststart,datetimeins,datetimeupd,code_request,code_item) values (".. nextVal ..",'".. itemStatus .."',1,NULL,'f',hr_now(),hr_now(),".. c.codeRequest ..",".. codeItem ..")")
+  		  if (hrsrv:sqlExec(query:self())==true) then
+				   query:setSQL("select rqi.code,ite.code,ite.description,ite.price,rqi.countitem,rqi.status,count(rqa.code_requestitem),rqi.note from requestitem rqi join item ite on (rqi.code_item=ite.code) left join requestadditionalitem rqa on (rqi.code=rqa.code_requestitem) where (rqi.code=".. nextVal ..") group by rqi.code,ite.code,rqa.code_requestitem")
+       if (hrsrv:sqlExec(query:self())==true) then
+					   if (query:nextResult()==true) then
+					    item:pointer(c.listRequestItem:addFirst(query:fieldInteger(0)))
+         c.itemAddList(item,query:fieldInteger(1),query:fieldString(2),query:fieldDecimal(3),query:fieldInteger(4),query:fieldString(5),query:fieldInteger(6),query:fieldString(7))
+         --
+         c.listRequestItem:runList()
+        end
+		     end
+		    end
+     end
+    end
+   else
+	   hrcli:mensagem("1","statusbar","X","1","Item não existe","","erro","")
+ 	 end
+  end
+ end
+end
+
+c.itemAddList=function(item,codeItem,itemDescription,price,countItem,status,countAdditional,note)
+ local subItem=QPlaListWidgetSubItem()
+ local strPrice=SString()
+ local alignCenter=QFlagAlignment()
+ local alignLeft=QFlagAlignment()
+ local alignRight=QFlagAlignment()
+ local alignRightTop=QFlagAlignment()
+ local fontBold=QFont()
+ local font=QFont()
+ --
+ alignCenter:set(alignCenter:hCenter()|alignCenter:vTop())
+ alignLeft:set(alignLeft:hLeft()|alignLeft:vTop())
+ alignRight:set(alignRight:hRight()|alignRight:vCenter())
+ alignRightTop:set(alignRightTop:hRight()|alignRightTop:vTop())
+ fontBold:set("Application",8,true,false)
+ font:set("Application",9,false,false)
+ --
+ strPrice:fmtCopy("R$% 7.2f",price)
+ --
+ item:addIcon("0xe745",26,26,1,1,4,1)
+ subItem:pointer(item:addLabel(codeItem ..". " ..itemDescription,1,2,2,8))
+ subItem:setFont(font:self())
+ subItem:pointer(item:addLabel(strPrice:array(),3,2,2,3))
+ subItem:setAlignment(alignLeft:self())
+ subItem:setFont(font:self())
+ subItem:pointer(item:addLabel("x ".. countItem,3,7,2,1))
+ subItem:setAlignment(alignLeft:self())
+ subItem:setFont(font:self())
+ --
+ subItem:pointer(item:addLabel(status,1,11,2,3))
+ subItem:setFont(font:self())
+ subItem:setAlignment(alignRight:self())
+ subItem:pointer(item:addLabel("Status",3,11,2,3))
+ subItem:setAlignment(alignRightTop:self())
+ subItem:setFont(fontBold:self())
+ --
+ if (countAdditional>0) then
+  item:addIcon("0xe6f1",16,16,1,10,2,1)
+ else
+	 item:addIcon("",16,16,1,10,2,1)
+	end
+ if (note~="") then
+  subItem:pointer(item:addIcon("0xe6eb",16,16,3,10,2,1))
+  subItem:setAlignment(alignCenter:self())
+ else
+	 item:addIcon("",16,16,3,10,2,1)
+	end
+end
+
+c.enableFieldAndButton=function(bool)
+ hrcli:enabled("G43",(bool==false))
+ hrcli:enabled("H46",bool)
+ hrcli:enabled("G46",bool)
+ hrcli:enabled("C46",bool)
+ hrcli:enabled("A48",bool)
+end
+ 
+c.editItem=function()
+ hrcli:enabled("F46",false)
+ hrcli:enabled("E46",false)
+ --
+ c.enableFieldAndButton(true)
+ hrcli:focus("C46","DADOS")
+end
+
+c.cancelItem=function()
+ local query=SDBQuery()
+ local requestStart=nil
+ local res=nil
+ --
+ query:setSQL("select check_requeststart from requestitem where (code=".. c.requestItemIndex ..")")
+ if (hrsrv:sqlExec(query:self())==true) then
+  if (query:nextResult()==true) then
+   requestStart=query:fieldString(0)
+  end
+ end
+ --
+ if (requestStart~=nil) then
+  if (requestStart=="t") then
+   --Apenas cancela
+   res=hrcli:showConfirmacao("dialog","?","1002","Cancelar Item","Item já foi liberado, deseja cancela-lo?","Sim|Não")
+   if (res=="1") then
+    query:setSQL("update requestitem set status='Cancelado',datetimeupd=hr_now() where (code=".. c.requestItemIndex ..")")
+    if (hrsrv:sqlExec(query:self())==true) then
+     hrcli:mensagem("1","dialog","V","1","Item Cancelado","Item foi cancelado com sucesso","erro","")
+    end
+   end
+  else
+   --Pode excluir
+   res=hrcli:showConfirmacao("dialog","?","1002","Excluir Item","Item não foi liberado, deseja exclui-lo?","Sim|Não")
+   if (res=="1") then
+    hrsrv:sqlBegin("dialog","V","Item Excluido","Item foi excluido com sucesso")
+    --
+    query:setSQL("delete from requestadditionalitem where (code_requestitem=".. c.requestItemIndex ..")")
+    hrsrv:sqlExec(query:self())
+    --
+    query:setSQL("delete from requestitem where (code=".. c.requestItemIndex ..")")
+    hrsrv:sqlExec(query:self())
+    --
+    hrsrv:sqlCommit()
+   end
+  end
+  --
+  c.refreshDetailItem()
+ else
+  hrcli:mensagem("1","dialog","X","Algo deu errado","Não foi possível encontrar o item, tente novamente","erro","")
+ end
+end
+
+c.confirmEditItem=function()
+ --Faz update qntd e note
+ local query=SDBQuery()
+ --
+ query:setSQL("update requestitem set countitem=".. hrcli:getValor("C46") ..",note='".. hrcli:getValor("A48") .."' where (code=".. c.requestItemIndex ..")")
+ hrsrv:sqlExec(query:self())
+ --
+ c.enableFieldAndButton(false)
+ c.refreshDetailItem()
+end
+
+c.cancelEditItem=function()
+ --Recarrega qntd e note
+ c.enableFieldAndButton(false)
+ c.refreshDetailItem()
+end
+
+c.clickedRequest=function(index)
+ if (index>0) then
+  c.codeRequest=index
+  c.requestItem()
+ end
+end
+
+c.clickedRequestItem=function(index)
+ hrcli:enabledform(false)
+ --
+ hrcli:valor("A43","")
+ hrcli:valor("A44","")
+ hrcli:valor("C46","")
+ hrcli:valor("A48","")
+ hrcli:enabled("F46",false)
+ hrcli:enabled("E46",false)
+ --
+ c.requestItemIndex=index
+ --
+ c.form3(false)
+ c.form6(true)
+ --
+ c.refreshDetailItem()
+ hrcli:enabledform(true)
+end
+
+c.refreshDetailItem=function()
+ local query=SDBQuery()
+ local dateTime=SDateTime()
+ local strTime=SString()
+ local totalTime=nil
+ local status=nil
+ --
+ query:setSQL("select ite.code,ite.description,rqi.status,(hr_now()-rqi.datetimeupd),rqi.countitem,rqi.note,rqi.check_requeststart,ite.preparation from requestitem rqi join item ite on (rqi.code_item=ite.code) where (rqi.code=".. c.requestItemIndex ..")")
+ if (hrsrv:sqlExec(query:self())==true) then
+  if (query:nextResult()==true) then
+   status=query:fieldString(2)
+   strTime:copy(query:fieldString(3))
+   --
+   if (strTime:length()==8) then --Retornou 'hh:mm:ss'
+    dateTime:set(query:fieldString(3),"hh:mm:ss")
+    if (dateTime:toInt("hh")>0) then
+     totalTime=dateTime:toString("hh:mm") .." horas"
+    else
+     totalTime=dateTime:toInt("mm") .." minutos"
+    end
+   else
+    totalTime=" mais de 24 horas"
+   end
+   --
+   hrcli:valor("A43",query:fieldInteger(0) ..". ".. query:fieldString(1))
+   hrcli:valor("A44","<i><b>Status:</b></i> ".. status ..", há ".. totalTime)
+   hrcli:valor("C46",query:fieldInteger(4))
+   hrcli:valor("A48",query:fieldString(5))
+   --
+   if (query:fieldString(6)=="f") then
+    hrcli:enabled("F46",true)
+    hrcli:enabled("E46",true)
+   else
+    if (query:fieldString(7)=="Pronto") then
+     hrcli:enabled("F46",(status=="Aguardando"))
+     hrcli:enabled("E46",((status~="Entregue") and (status~="Cancelado")))
+    else
+     hrcli:enabled("F46",(status=="Preparar"))
+     hrcli:enabled("E46",((status~="Entregue") and (status~="Cancelado")))
+    end
+   end
+  end
+ end
+end
+
+c.additionalAddList=function(item,description,price)
+ local subItem=QPlaListWidgetSubItem()
+ local alignRight=QFlagAlignment()
+ local strPrice=SString()
+ --
+ alignRight:set(alignRight:hRight()|alignRight:vCenter())
+ --
+ strPrice:fmtCopy("R$% 7.2f",price)
+ subItem:pointer(item:addLabel(description,1,1,1,3))
+	subItem:pointer(item:addLabel(strPrice:array(),1,4,1,2))	  
+ subItem:setAlignment(alignRight:self())
+end
+
+c.doubleClickedRequestItem=function(index)
+ local query=SDBQuery()
+ local item=QPlaListWidgetItem()
+ local codeChosen=SString()
+ local code=nil
+ local filter=""
+ --
+ hrcli:enabledform(false)
+ --
+ c.listAddAvailable:clear()
+ c.listAddChosen:clear()
+ c.additionalTable={}
+ --
+ query:setSQL("select 1 from requestitem rqi join item ite on (rqi.code_item=ite.code) where (rqi.code=".. index ..") and (ite.additional='SIM')")
+ if (hrsrv:sqlExec(query:self())==true) then
+  if (query:nextResult()==true) then
+		 c.requestItemIndex=index
+		 --
+		 c.form3(false)
+		 c.form5(true)
+		 --index é code de additional
+		 query:setSQL("select add.code,add.description,add.price from additional add join requestadditionalitem rqa on (add.code=rqa.code_additional) where (rqa.code_requestitem=".. index ..")")
+		 if (hrsrv:sqlExec(query:self())==true) then
+		  while (query:nextResult()==true) do
+		   item:pointer(c.listAddChosen:add(query:fieldInteger(0)))
+     c.additionalAddList(item,query:fieldString(1),query:fieldDecimal(2))
+		   --
+		   c.additionalTable[query:fieldInteger(0)]=""
+		   codeChosen:cat(query:fieldInteger(0) ..",")
+		  end
+		 end
+		 --
+		 if (codeChosen:length()>0) then
+		  codeChosen:realloc(codeChosen:length()-1)
+		  filter=" and (add.code not in (".. codeChosen:array() .."))"
+		 end
+		 --index é code de additional
+		 query:setSQL("select add.code,add.description,add.price from additional add join additionalitem adi on (add.code=adi.code_additional) join item ite on (adi.code_item=ite.code) join requestitem rqi on (ite.code=rqi.code_item) where (rqi.code=".. index ..")".. filter .."")
+		 if (hrsrv:sqlExec(query:self())==true) then
+		  while (query:nextResult()==true) do
+		   item:pointer(c.listAddAvailable:add(query:fieldInteger(0)))
+     c.additionalAddList(item,query:fieldString(1),query:fieldDecimal(2)) 
+		  end
+		 end
+		 --
+		 c.listAddAvailable:runList()
+		 c.listAddChosen:runList()
+		else
+   hrcli:mensagem("1","dialog","X","1","Adicionais Indisponivel","Item não possui adicionais","erro","")
+  end
+	end
+ --
+ hrcli:enabledform(true)
+end
+
+c.clickedAddAvailable=function(index)
+ --Adiciona para Escolhido
+ local query=SDBQuery()
+ local item=QPlaListWidgetItem()
+ --
+ query:setSQL("select description,price from additional where (code=".. index ..")")
+ if (hrsrv:sqlExec(query:self())==true) then
+  if (query:nextResult()==true) then
+   item:pointer(c.listAddChosen:addFirst(index))  
+	  c.additionalAddList(item,query:fieldString(0),query:fieldDecimal(1)) 
+	 end
+ end
+ --
+ c.additionalTable[index]=""
+ c.listAddChosen:runList()
+ c.listAddAvailable:removeRow(c.listAddAvailable:rowFind(index))
+end
+
+c.clickedAddChosen=function(index)
+ --Remove de Escolhido
+ local query=SDBQuery()
+ local item=QPlaListWidgetItem()
+ --
+ query:setSQL("select description,price from additional where (code=".. index ..")")
+ if (hrsrv:sqlExec(query:self())==true) then
+  if (query:nextResult()==true) then
+   item:pointer(c.listAddAvailable:addFirst(index))  
+	  c.additionalAddList(item,query:fieldString(0),query:fieldDecimal(1)) 
+	 end
+ end
+ --
+ c.additionalTable[index]=nil
+ c.listAddAvailable:runList()
+ c.listAddChosen:removeRow(c.listAddChosen:rowFind(index))
+end
+
+c.aditionalConfirm=function()
+ local query=SDBQuery()
+ --
+ hrsrv:sqlBegin()
+ --
+ query:setSQL("delete from requestadditionalitem where (code_requestitem=".. requestItemIndex ..")")
+ hrsrv:sqlExec(query:self())
+ for key,value in pairs(c.additionalTable) do
+  query:setSQL("insert into requestadditionalitem (code,code_requestitem,code_additional) values (hr_nextval('requestadditionalitem_code_seq'),".. requestItemIndex ..",".. key ..")")
+  hrsrv:sqlExec(query:self())
+ end
+ --
+ hrsrv:sqlCommit()
+ c.backRequest()
+end
+
+c.viewItemMenu=function()
+ local query=SDBQuery()
+ local item=QPlaListWidgetItem()
+ local subItem=QPlaListWidgetSubItem()
+ local font=QFont()
+ --
+ font:set("Application",8,false,false)
+ c.listCategory:clear()
+ --
+ c.form3(false)
+ c.form4(true)
+ --
+ query:setSQL("select code,description from category order by code")
+ if (hrsrv:sqlExec(query:self())==true) then
+  while (query:nextResult()==true) do
+   item:pointer(c.listCategory:add(query:fieldInteger(0)))  
+   subItem:pointer(item:addLabel(query:fieldString(1),1,1,2,1))
+   subItem:setFont(font:self())
+  end 
+ end
+ --
+ c.listCategory:runList()
+end
+
+c.clickedCategory=function(index)
+ local query=SDBQuery()
+ local item=QPlaListWidgetItem()
+ local subItem=QPlaListWidgetSubItem()
+ local price=SString() 
+ local alignRight=QFlagAlignment()
+ local font=QFont()
+ local fontSmall=QFont()
+ --
+ alignRight:set(alignRight:hRight()|alignRight:vCenter())
+ font:set("Application",8,false,false)
+ fontSmall:set("Application",7,false,false)
+ --
+ c.listItem:clear()
+ --
+ query:setSQL("select code,description,price from item where (code_category=".. index ..") and (active='SIM')")
+ if (hrsrv:sqlExec(query:self())==true) then
+  while (query:nextResult()==true) do
+   price:fmtCopy("R$% 7.2f",query:fieldDecimal(2))
+   --
+   item:pointer(c.listItem:add(query:fieldInteger(0)))  
+   subItem:pointer(item:addLabel(query:fieldInteger(0) ..".",1,1,2,2))
+   subItem:setFont(fontSmall:self())
+   subItem:setAlignment(alignRight:self())
+   subItem:pointer(item:addLabel(query:fieldString(1),1,3,2,10))
+   subItem:setFont(font:self())
+   subItem:pointer(item:addLabel(price:array(),1,13,2,5))
+   subItem:setFont(font:self())
+   subItem:setAlignment(alignRight:self())
+  end 
+ end
+ --
+ c.listItem:runList()
+end
+
+c.clickedItem=function(index)
+ c.form3(true)
+ c.form4(false)
+ --
+ c.addItem(index)
+end
+
+c.backStartMenu=function()
+ c.form1(true)
+ c.form2(false)
+ c.form3(false)
+ --
+ c.findGuestCheck()
+end
+
+c.backRequest=function()
+ c.form3(true)
+ c.form4(false)
+ c.form5(false)
+ c.form6(false)
+ --
+ c.refreshRequestItem()
+end
+
+c.form1=function(bool)
+ hrcli:linhavisivel(1,13,bool)
+end
+
+c.form2=function(bool)
+ hrcli:linhavisivel(14,6,bool)
+end
+
+c.form3=function(bool)
+ hrcli:linhavisivel(20,9,bool)
+end
+
+c.form4=function(bool)
+ hrcli:linhavisivel(29,6,bool)
+end
+
+c.form5=function(bool)
+ hrcli:linhavisivel(35,8,bool)
+end
+
+c.form6=function(bool)
+ hrcli:linhavisivel(43,8,bool)
+end
+
+c.form7=function(bool)
+ hrcli:linhavisivel(51,4,bool)
+end
+
+c.appclose=function()
+ c.device:cpuonRelease()
+ c.device:lockOrientationPortrait()
+end

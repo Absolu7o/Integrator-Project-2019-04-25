@@ -1,0 +1,220 @@
+0.0.2.100061346$0.0.2.10006136672896961434714124700=label("Caixa");=mesclagem(1,12);=fonte("Application",9,1,1)20=label("Comanda")21=edit(texto(10),autoConfirm(0),expressao(script("c.findGuestCheck()")));=mesclagem(1,2);=fonte("Application",10,0,0);=alinhamento("direita","centro")23=botao("",expressao(script("c.findGuestCheck()")),imagem("0xe724",22,22),size(65,30))24=label("Digite uma comanda");=alinhamento("direita","centro");=mesclagem(1,8)40=lista2(ativo(1));=mesclagem(9,7)48=label("Sub-Total");=mesclagem(1,2);=alinhamento("direita","centro")410=label("R$   0,00");=mesclagem(1,2);=alinhamento("direita","centro")68=label("Dinheiro");=mesclagem(1,2);=alinhamento("direita","centro")610=edit(decimal(8.2),ativo(0),autoConfirm(1),expressao(script("c.refreshValues(1)")));=mesclagem(1,2);=alinhamento("direita","centro")88=label("Cartão");=mesclagem(1,2);=alinhamento("direita","centro")810=edit(decimal(8.2),ativo(0),autoConfirm(1),expressao(script("c.refreshValues(2)")));=mesclagem(1,2);=alinhamento("direita","centro")99=label("Débito");=mesclagem(1,2);=alinhamento("direita","centro")911=check(ativo(0))109=label("Crédito");=mesclagem(1,2);=alinhamento("direita","centro")1011=check(ativo(0))129=botao("Finalizar Pedido",expressao(script("c.finishRequest()")));=mesclagem(1,3)
+0$
+7283$c.apprun=function()
+ hrcli:enabled("D3",true)
+ --
+ c.listRequestItem=QPlaListWidget("A5")
+ c.ususer=hrcli:getVariavel("currentuser")
+ c.codeGuestCheck=nil
+ c.codeRequest=nil
+ c.totalValue=0
+ c.enablePay=true
+end
+
+c.findGuestCheck=function()
+ local query=SDBQuery()
+ local dateTime=SDateTime()
+ local barcode=nil
+ local status=nil
+ --
+ barcode=hrcli:getValor("B3")
+ c.codeGuestCheck=nil
+ c.codeRequest=nil
+ c.totalValue=0
+ c.listRequestItem:clear()
+ c.enablePay=true
+ --
+ hrcli:valor("K5","R$   0,00")
+ hrcli:valor("K7","")
+ hrcli:valor("K9","")
+ hrcli:valor("L10",false)
+ hrcli:valor("L11",false)
+ --
+ if (barcode~="") then
+  query:setSQL("select gck.code,req.status,req.code,req.datetimeins,tab.description from guestcheck gck left join request req on (gck.code=req.code_guestcheck) left join tablelist tab on (req.code_tablelist=tab.code) where (gck.barcode='".. barcode .."') and (gck.active='SIM') order by req.code desc limit 1")
+  if (hrsrv:sqlExec(query:self())==true) then
+   if (query:nextResult()==true) then
+    c.codeGuestCheck=query:fieldInteger(0)
+    status=query:fieldString(1)
+    --
+    if (status=="Aberto") then
+     c.codeRequest=query:fieldInteger(2)
+     dateTime:set(query:fieldString(3),"yyyy-MM-dd hh:mm:ss")
+     --
+     hrcli:valor("E3","<b>Pedido:</b> ".. c.codeRequest .."  <b>Mesa:</b> ".. query:fieldString(4) .." <b>Criado</b>: ".. dateTime:toString("dd/MM/yyyy hh:mm"))
+     c.loadRequestItem()
+     c.countTotalValue()
+     c.enableField(c.enablePay)
+     --
+     if (c.enablePay==false) then
+      hrcli:mensagem("1","dialog","X","1","Pedido em Andamento","Pedido possuí itens pendentes","erro","")
+     end
+    else
+     hrcli:valor("E3","Nenhum pedido em Aberto")
+    end
+   else
+    hrcli:valor("E3","Comanda não existe")
+   end
+  end
+ else
+  hrcli:valor("E3","Código de comanda inválido")
+  hrcli:focus("B3","DADOS")
+ end
+end
+
+c.countTotalValue=function()
+ local query=SDBQuery()
+ local price=SString()
+ --
+ query:setSQL("select rqi.countitem,ite.price from requestitem rqi join item ite on (rqi.code_item=ite.code) where (rqi.code_request=".. c.codeRequest ..")")
+ if (hrsrv:sqlExec(query:self())==true) then
+  while (query:nextResult()==true) do
+   c.totalValue=c.totalValue+(query:fieldInteger(0)*query:fieldDecimal(1))
+  end
+ end
+ --
+ price:fmtCopy("R$% 7.2f",c.totalValue)
+ hrcli:valor("K5",price:array())
+ hrcli:valor("K7",c.totalValue)
+end
+
+c.loadRequestItem=function()
+ local query=SDBQuery()
+ local item=QPlaListWidgetItem()
+ --            
+ query:setSQL("select rqi.code,ite.code,ite.description,ite.price,rqi.countitem,rqi.status,count(rqa.code_requestitem),rqi.note from requestitem rqi join item ite on (rqi.code_item=ite.code) left join requestadditionalitem rqa on (rqi.code=rqa.code_requestitem) where (rqi.code_request=".. c.codeRequest ..") group by rqi.code,ite.code,rqa.code_requestitem order by rqi.code desc")
+ if (hrsrv:sqlExec(query:self())==true) then
+  while (query:nextResult()==true) do
+   item:pointer(c.listRequestItem:add(query:fieldInteger(0)))
+   c.itemAddList(item,query:fieldInteger(1),query:fieldString(2),query:fieldDecimal(3),query:fieldInteger(4),query:fieldString(5),query:fieldInteger(6),query:fieldString(7))
+  end
+ end
+ --
+ c.listRequestItem:runList()
+end
+
+c.itemAddList=function(item,codeItem,itemDescription,price,countItem,status,countAdditional,note)
+ local subItem=QPlaListWidgetSubItem()
+ local strPrice=SString()
+ local alignCenter=QFlagAlignment()
+ local alignLeft=QFlagAlignment()
+ local alignRight=QFlagAlignment()
+ local alignRightTop=QFlagAlignment()
+ local fontBold=QFont()
+ local font=QFont()
+ --
+ alignCenter:set(alignCenter:hCenter()|alignCenter:vTop())
+ alignLeft:set(alignLeft:hLeft()|alignLeft:vTop())
+ alignRight:set(alignRight:hRight()|alignRight:vCenter())
+ alignRightTop:set(alignRightTop:hRight()|alignRightTop:vTop())
+ fontBold:set("Application",8,true,false)
+ font:set("Application",9,false,false)
+ --
+ if ((status~="Cancelado") and (status~="Entregue")) then
+  c.enablePay=false
+ end
+ --
+ strPrice:fmtCopy("R$% 7.2f",price)
+ --
+ item:addIcon("0xe745",26,26,1,1,4,1)
+ subItem:pointer(item:addLabel(codeItem ..". " ..itemDescription,1,2,2,8))
+ subItem:setFont(font:self())
+ subItem:pointer(item:addLabel(strPrice:array(),3,2,2,3))
+ subItem:setAlignment(alignLeft:self())
+ subItem:setFont(font:self())
+ subItem:pointer(item:addLabel("x ".. countItem,3,7,2,1))
+ subItem:setAlignment(alignLeft:self())
+ subItem:setFont(font:self())
+ --
+ subItem:pointer(item:addLabel(status,1,11,2,3))
+ subItem:setFont(font:self())
+ subItem:setAlignment(alignRight:self())
+ subItem:pointer(item:addLabel("Status",3,11,2,3))
+ subItem:setAlignment(alignRightTop:self())
+ subItem:setFont(fontBold:self())
+ --
+ if (countAdditional>0) then
+  item:addIcon("0xe6f1",16,16,1,10,2,1)
+ else
+	 item:addIcon("",16,16,1,10,2,1)
+	end
+ if (note~="") then
+  subItem:pointer(item:addIcon("0xe6eb",16,16,3,10,2,1))
+  subItem:setAlignment(alignCenter:self())
+ else
+	 item:addIcon("",16,16,3,10,2,1)
+	end
+end
+
+c.refreshValues=function(value)
+ local countValue=nil
+ if (value==1) then --Dinheiro
+  countValue=c.totalValue-hrcli:getValor("K7")
+  if (countValue>=0) then
+   hrcli:valor("K9",countValue)
+  else
+   hrcli:valor("K7","")
+   hrcli:valor("K9","")
+  end
+ else --Cartão
+  countValue=c.totalValue-hrcli:getValor("K9")
+  if (countValue>=0) then
+   hrcli:valor("K7",countValue)
+  else
+   hrcli:valor("K7","")
+   hrcli:valor("K9","")
+  end
+ end
+end
+
+c.finishRequest=function()
+ local query=SDBQuery()
+ local payMoney=hrcli:getValor("K7")
+ local payCard=hrcli:getValor("K9")
+ local typeDebit=hrcli:getValor("L10")
+ local typeCredit=hrcli:getValor("L11")
+ local res=nil
+ local cardType=""
+ local payOk=true
+ --
+ if (payCard>0) then
+  if ((typeDebit==true) or (typeCredit==true)) then
+   cardType=cardType .. ((typeDebit==true) and ("D") or (""))
+   cardType=cardType .. ((typeCredit==true) and ("C") or (""))
+  else
+   payOk=false
+   hrcli:mensagem("1","dialog","X","1","Pagamento com Cartão","Escolha um tipo para pagamento com Cartão","erro","")
+  end  
+ end
+ if (payOk==true) then
+  if (c.totalValue==(payMoney+payCard)) then
+   res=hrcli:showConfirmacao("dialog","?","1002","Confirmar Pagamento","Confirmar pagamento do pedido ".. c.codeRequest .." ?","Sim|Não")
+   if (res=="1") then
+    query:setSQL("update request set status='Finalizado',datetimeend=hr_now(),ususer_usu001=".. g.ususer ..",paymoney=".. payMoney ..",paycard=".. payCard ..",cardtype='".. cardType .."' where (code=".. c.codeRequest ..")")
+    if (hrsrv:sqlExec(query:self())==true) then
+     hrcli:mensagem("1","dialog","V","1","Pagamento Realizado","Pagamento do pedido ".. c.codeRequest .." confirmado.","erro","")
+     c.enableField(false)
+     c.listRequestItem:clear()
+     hrcli:valor("B3","")
+     hrcli:valor("E3","Digite uma comanda")
+     hrcli:valor("K5","R$   0,00")
+     hrcli:valor("K7","")
+     hrcli:valor("K9","")
+     hrcli:valor("L10",false)
+     hrcli:valor("L11",false)
+     hrcli:focus("B3","DADOS")
+    end
+   end
+  else
+   hrcli:mensagem("1","dialog","X","1","Pagamento do Pedido","Verefique os valores de Pagamento","erro","")
+  end
+ end
+end
+
+c.enableField=function(bool)
+ hrcli:enabled("K7",bool)
+ hrcli:enabled("K9",bool)
+ hrcli:enabled("L10",bool)
+ hrcli:enabled("L11",bool)
+ hrcli:enabled("J13",bool)
+end
