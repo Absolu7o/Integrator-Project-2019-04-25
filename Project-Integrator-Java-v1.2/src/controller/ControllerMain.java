@@ -16,7 +16,7 @@ public abstract class ControllerMain {
 
         ViewMaster.setConstraints();
         new ViewLogin();
-
+        
     }
     
     public void insertUserLog(Userlog userlog){

@@ -29,7 +29,7 @@ public class ControllerLogin extends ControllerMain {
             userlogin.setUserpermission(userLogin.getUserpermission());
         });
         db.getTransaction().commit();
-        
+
         if (userlogin.getCode() > 0) {
             new ViewMenuSystem(userlogin.getUserpermission().getCashier(), userlogin.getUserpermission().getAttendant());
             insertUserLog(new Userlog(0, new Systemview(4), userlogin, new Date(), "Login"));

@@ -4,6 +4,7 @@ import static controller.ControllerMain.userlogin;
 import java.util.Date;
 import model.Systemview;
 import model.Userlog;
+import report.Report;
 import view.ViewLogin;
 import view.ViewMenuSystem;
 import view.ViewRegisterGuestCheck;
@@ -20,8 +21,20 @@ public class ControllerMenuSystem extends ControllerMain {
         insertUserLog(new Userlog(0, new Systemview(4), userlogin, new Date(), "Troca de Tela"));
     }
 
+    public void callReport(String reportType) {
+
+        Report report = new Report(db);
+        
+        if (reportType == "UserLogAnalitc") {
+            report.userLogAnalitc();
+        } else if (reportType == "UserLogSynthetic") {
+            report.userLogSynthetic();
+        }
+
+    }
+
     public void executeLogout() {
-	new ViewLogin();
+        new ViewLogin();
         insertUserLog(new Userlog(0, new Systemview(3), userlogin, new Date(), "Logout"));
     }
 

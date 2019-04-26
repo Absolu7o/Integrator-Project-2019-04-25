@@ -36,8 +36,8 @@ public class ViewMenuSystem extends ViewMaster implements ActionListener {
     JRadioButtonMenuItem colorRed = new JRadioButtonMenuItem("Vermelho");
 
     JButton buttonRegisterGuestCheck = new JButton("Cadastro de Comandas");
-    JButton buttonReportUserLog = new JButton("Relatório User Log");
-    JButton buttonProgram3 = new JButton();
+    JButton buttonReportUserLogAnalitc = new JButton("Relatório Análitico de Log");
+    JButton buttonReportUserLogSynthetic = new JButton("Relatório Sintético de Log");
 
     public ViewMenuSystem() {
         //Melhorar: quando este método for chamado, apenas deixar painel do Menu visível
@@ -70,8 +70,8 @@ public class ViewMenuSystem extends ViewMaster implements ActionListener {
     public void addComponentDefaultPane() {
 
         buttonRegisterGuestCheck = setDefaultButton(buttonRegisterGuestCheck, 0, 0, 2, 5, "BOTH");
-        buttonReportUserLog = setDefaultButton(buttonReportUserLog, 2, 0, 2, 5, "BOTH");
-        buttonProgram3 = setDefaultButton(buttonProgram3, 4, 0, 2, 5, "BOTH");
+        buttonReportUserLogAnalitc = setDefaultButton(buttonReportUserLogAnalitc, 2, 0, 2, 5, "BOTH");
+        buttonReportUserLogSynthetic = setDefaultButton(buttonReportUserLogSynthetic, 4, 0, 2, 5, "BOTH");
 
     }
 
@@ -123,8 +123,8 @@ public class ViewMenuSystem extends ViewMaster implements ActionListener {
     private void setComponentActionEvent() {
 
         buttonRegisterGuestCheck.addActionListener(this);
-        buttonReportUserLog.addActionListener(this);
-        buttonProgram3.addActionListener(this);
+        buttonReportUserLogAnalitc.addActionListener(this);
+        buttonReportUserLogSynthetic.addActionListener(this);
 
         menuSystemOption.addActionListener(this);
         logoutMenu.addActionListener(this);
@@ -136,8 +136,10 @@ public class ViewMenuSystem extends ViewMaster implements ActionListener {
 
         if (e.getSource() == buttonRegisterGuestCheck) {
             controllerMenuSystem.callRegisterGuestCheck();
-        } else if (e.getSource() == buttonReportUserLog) {
-            //Montar Relatório
+        } else if (e.getSource() == buttonReportUserLogAnalitc) {
+            controllerMenuSystem.callReport("UserLogAnalitc");
+        } else if (e.getSource() == buttonReportUserLogSynthetic) {
+            controllerMenuSystem.callReport("UserLogSynthetic");
         } else if (e.getSource() == menuSystemOption) {
             controllerMenuSystem.callMenuSystem();
         } else if (e.getSource() == logoutMenu) {
