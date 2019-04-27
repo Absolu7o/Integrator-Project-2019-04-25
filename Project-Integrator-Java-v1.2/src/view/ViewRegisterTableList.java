@@ -1,22 +1,18 @@
 package view;
 
-import java.awt.GridBagConstraints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.security.cert.PKIXRevocationChecker.Option;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 public class ViewRegisterTableList extends ViewMaster implements ActionListener {
 
     JLabel labelTitle = new JLabel("Cadastro de Mesas");
-    JLabel labelCode = new JLabel("C�digo");
-    JLabel labelDescription = new JLabel("Descri��o");
+    JLabel labelCode = new JLabel("Código");
+    JLabel labelDescription = new JLabel("Descrição");
     JLabel labelActive = new JLabel("Ativo?");
 
     JButton buttonFirst = new JButton("|<");
@@ -34,7 +30,7 @@ public class ViewRegisterTableList extends ViewMaster implements ActionListener 
     JTextField fieldCode = new JTextField();
     JTextField fieldDescription = new JTextField();
 
-    String[] item = {"SIM", "N�O"};
+    String[] item = {"SIM", "NÃO"};
     JComboBox comboboxActive = new JComboBox(item);
 
     public ViewRegisterTableList() {

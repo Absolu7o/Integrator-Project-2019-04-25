@@ -7,10 +7,6 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.event.TableModelListener;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableModel;
-import javax.swing.text.TableView.TableCell;
 
 import controller.ControllerRegisterGuestCheck;
 
@@ -19,8 +15,8 @@ public class ViewRegisterGuestCheck extends ViewMaster implements ActionListener
     ControllerRegisterGuestCheck controllerGuestCk = new ControllerRegisterGuestCheck();
 
     JLabel labelTitle = new JLabel("Cadastro de Comandas");
-    JLabel labelCode = new JLabel("C�digo");
-    JLabel labelDescription = new JLabel("Descri��o");
+    JLabel labelCode = new JLabel("Código");
+    JLabel labelDescription = new JLabel("Descrição");
     JLabel labelActive = new JLabel("Ativo?");
 
     JButton buttonInsert = new JButton("Adicionar");
@@ -33,7 +29,7 @@ public class ViewRegisterGuestCheck extends ViewMaster implements ActionListener
 
     JTable table = new JTable(1, 3);
 
-    String[] item = {"SIM", "N�O"};
+    String[] item = {"SIM", "NÃO"};
     JComboBox comboboxActive = new JComboBox(item);
 
     public ViewRegisterGuestCheck() {
@@ -67,7 +63,7 @@ public class ViewRegisterGuestCheck extends ViewMaster implements ActionListener
         //Combobox
         comboboxActive = setDefaultCombobox(comboboxActive, 2, 6, 1, 1, "HORIZONTAL");
 
-        //Bot�es
+        //Botões
         buttonInsert = setDefaultButton(buttonInsert, 1, 0, 1, 3, "BOTH");
         buttonDelete = setDefaultButton(buttonDelete, 1, 3, 1, 3, "BOTH");
         buttonEdit = setDefaultButton(buttonEdit, 1, 6, 1, 3, "BOTH");

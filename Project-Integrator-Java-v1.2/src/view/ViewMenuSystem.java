@@ -11,6 +11,9 @@ import javax.swing.JMenuItem;
 import javax.swing.JRadioButtonMenuItem;
 
 import controller.ControllerMenuSystem;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import net.sf.jasperreports.engine.JRException;
 
 public class ViewMenuSystem extends ViewMaster implements ActionListener {
 
@@ -137,9 +140,17 @@ public class ViewMenuSystem extends ViewMaster implements ActionListener {
         if (e.getSource() == buttonRegisterGuestCheck) {
             controllerMenuSystem.callRegisterGuestCheck();
         } else if (e.getSource() == buttonReportUserLogAnalitc) {
-            controllerMenuSystem.callReport("UserLogAnalitc");
+            try {
+                controllerMenuSystem.callReport("UserLogAnalitc");
+            } catch (JRException ex) {
+                Logger.getLogger(ViewMenuSystem.class.getName()).log(Level.SEVERE, null, ex);
+            }
         } else if (e.getSource() == buttonReportUserLogSynthetic) {
-            controllerMenuSystem.callReport("UserLogSynthetic");
+            try {
+                controllerMenuSystem.callReport("UserLogSynthetic");
+            } catch (JRException ex) {
+                Logger.getLogger(ViewMenuSystem.class.getName()).log(Level.SEVERE, null, ex);
+            }
         } else if (e.getSource() == menuSystemOption) {
             controllerMenuSystem.callMenuSystem();
         } else if (e.getSource() == logoutMenu) {

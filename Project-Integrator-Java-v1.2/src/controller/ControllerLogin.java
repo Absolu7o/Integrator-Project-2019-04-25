@@ -34,7 +34,7 @@ public class ControllerLogin extends ControllerMain {
             new ViewMenuSystem(userlogin.getUserpermission().getCashier(), userlogin.getUserpermission().getAttendant());
             insertUserLog(new Userlog(0, new Systemview(4), userlogin, new Date(), "Login"));
         } else {
-            JOptionPane.showMessageDialog(null, "Login e/ou Senha est�o incorretos!");
+            JOptionPane.showMessageDialog(null, "Login e/ou Senha estão incorretos!");
         }
 
     }

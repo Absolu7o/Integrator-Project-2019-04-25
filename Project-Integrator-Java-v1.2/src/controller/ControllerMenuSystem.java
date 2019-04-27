@@ -4,6 +4,7 @@ import static controller.ControllerMain.userlogin;
 import java.util.Date;
 import model.Systemview;
 import model.Userlog;
+import net.sf.jasperreports.engine.JRException;
 import report.Report;
 import view.ViewLogin;
 import view.ViewMenuSystem;
@@ -21,16 +22,9 @@ public class ControllerMenuSystem extends ControllerMain {
         insertUserLog(new Userlog(0, new Systemview(4), userlogin, new Date(), "Troca de Tela"));
     }
 
-    public void callReport(String reportType) {
-
+    public void callReport(String reportFile) throws JRException {
         Report report = new Report(db);
-        
-        if (reportType == "UserLogAnalitc") {
-            report.userLogAnalitc();
-        } else if (reportType == "UserLogSynthetic") {
-            report.userLogSynthetic();
-        }
-
+        report.createReport(reportFile);
     }
 
     public void executeLogout() {

@@ -45,7 +45,7 @@ public class ViewLogin extends ViewMaster implements ActionListener {
         fieldLogin = setDefaultField(fieldLogin, 0, 1, 1, 2, "HORIZONTAL");
         fieldPassword = setDefaultPasswordField(fieldPassword, 1, 1, 1, 2, "HORIZONTAL");
 
-        //Bot�es
+        //Botões
         buttonLogin = setDefaultButton(buttonLogin, 2, 0, 1, 3, "BOTH");
 
     }
