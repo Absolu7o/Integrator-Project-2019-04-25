@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 12/05/2019 21:50:58 by Hibernate Tools 4.3.1 -->
+<hibernate-mapping>
+    <class name="model.:Classe:" table=":tabela:" schema=":schema:" optimistic-lock="version">
+        
+		<!-- ATENCAO: 
+		extensao deve ser XXXX.hbm.xml;
+		classe deve ter mesmo nome do arquivo-->
+		
+		<!-- Campo PK -->
+		<id name="code" type="int">
+            <column name="code" />
+            <generator class="sequence">
+                <param name="sequence">
+                    gcsystem.:tabela:_code_seq
+                </param>
+            </generator>
+        </id>
+		
+		<!-- Campo FK - 1 para N -->
+		<many-to-one name=":tabelaFK:" class="model.:classeFk:" fetch="select">
+            <column name=":campoFK:" />
+        </many-to-one>
+		
+        <!-- Campo FK - 1 para 1 -->
+		<one-to-one name=":tabelaFK:" class="model.:classeFk:" fetch="select">
+            <column name=":campoFK:" />
+        </one-to-one>
+		
+		<!-- Campo Varchar > Variavel String -->
+		<property name=":NomeVariavel:" type="string">
+            <column name=":NomeCampo:" length=":tamanhoCampo:" />
+        </property>
+		
+		<!-- Campo Char > Variavel Character -->
+		<property name=":NomeVariavel:" type="java.lang.Character">
+            <column name=":NomeCampo:" length=":tamanhoCampo:" />
+        </property>
+		
+		<!-- Campo Decimal > Variavel BigDecimal -->
+		<property name=":NomeVariavel:" type="big_decimal">
+            <column name=":NomeCampo:" precision=":tamanhoCampo:" />
+        </property>
+		
+		<!-- Campo Integer > Variavel Integer -->
+		<property name=":NomeVariavel:" type="java.lang.Integer">
+            <column name=":NomeCampo:" />
+        </property>
+        
+		<!-- Campo TimeStamp > Variavel Date -->
+		<property name=":NomeVariavel:" type="timestamp">
+            <column name=":NomeCampo:" length="29" />
+        </property>
+        		
+		<!-- Tabela FK - 1 para N Ex: Tabela 'requestproduct'(Tabela FK) tem FK para 'product' -->
+		<set name=":ObjetoFK:" table=":TabelaFK:" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name=":CampoFK:" />
+            </key>
+            <one-to-many class="model.:ClasseTabelaFK:" />
+        </set>
+		
+		<!-- Tabela FK - 1 para 1 Ex: Tabela 'userpermission'(Tabela FK) tem PK Compartilhada para 'userlogin' -->
+		<set name=":ObjetoFK:" table=":TabelaFK:" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="code" />
+            </key>
+            <one-to-one class="model.:ClasseTabelaFK:" />
+        </set>
+	
+</class>
+</hibernate-mapping>
