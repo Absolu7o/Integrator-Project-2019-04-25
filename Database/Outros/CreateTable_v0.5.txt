@@ -1,0 +1,206 @@
+BEGIN;
+
+--Schema
+create schema if not exists gcsystem;
+
+--Tabelas
+create table if not exists gcsystem.company(
+	code serial not null,
+	name varchar(60),
+	cnpj char(14),
+	address varchar(60),
+	numberaddress varchar(10),
+	complement varchar(40),
+	district varchar(60),
+	city varchar(60),
+	uf char(2),
+	zipcode char(8),
+	active char(1),
+	constraint company_pk1 primary key (code));
+	
+create table if not exists gcsystem.userlogin(
+	code serial not null,
+	name varchar(60),
+	login varchar(20),
+	password varchar(100),
+	active char(1),
+	constraint userlogin_pk1 primary key (code));
+
+create table if not exists gcsystem.systemview(
+	code integer not null,
+	name varchar(60),
+	classname varchar(60),
+	constraint systemview_pk1 primary key (code));
+	
+create table if not exists gcsystem.userpermission(
+	code integer not null,
+	manager char(1),
+	cashier char(1),
+	attendant char(1),
+	constraint userpermission_pk1 primary key (code),
+	constraint userpermission_fk1 foreign key (code) references gcsystem.userlogin(code));
+	
+create table if not exists gcsystem.userlog(
+	code serial not null,
+	datetimeins timestamp,
+	logtype varchar(20),
+	code_userlogin integer,
+	code_company integer,
+	code_systemview integer,
+	constraint userlog_pk1 primary key (code),
+	constraint userlog_fk1 foreign key (code_userlogin) references gcsystem.userlogin(code),
+	constraint userlog_fk2 foreign key (code_company) references gcsystem.company(code),
+	constraint userlog_fk3 foreign key (code_systemview) references gcsystem.systemview(code));
+	
+create table if not exists gcsystem.multicompany(
+	code serial not null,
+	code_userlogin integer,
+	code_company integer,
+	constraint multicompany_pk1 primary key (code),
+	constraint multicompany_fk1 foreign key (code_userlogin) references gcsystem.userlogin(code),
+	constraint multicompany_fk2 foreign key (code_company) references gcsystem.company(code));
+
+create table if not exists gcsystem.tablelist(
+	code serial not null,
+	description varchar(10),
+	active char(1),
+	code_company integer,
+	constraint tablelist_pk1 primary key (code),
+	constraint tablelist_fk1 foreign key (code_company) references gcsystem.company(code));
+	
+create table if not exists gcsystem.guestcheck(
+	code serial not null,
+	barcode char(7),
+	active char(1),
+	code_company integer,
+	constraint guestcheck_pk1 primary key (code),
+	constraint guestcheck_fk1 foreign key (code_company) references gcsystem.company(code));
+	
+create table if not exists gcsystem.category(
+	code serial not null,
+	description varchar(40),
+	constraint category_pk1 primary key (code));
+	
+create table if not exists gcsystem.product(
+	code serial not null,
+	barcode char(9),
+	description varchar(40),
+	price decimal(12,2),
+	preparation varchar(20),
+	additional char(3),
+	active char(1),
+	datetimeins timestamp,
+	code_category integer,
+	constraint product_pk1 primary key (code),
+	constraint product_fk1 foreign key (code_category) references gcsystem.category(code));
+	
+create table if not exists gcsystem.additional(
+	code serial not null,
+	description varchar(40),
+	price decimal(12,2),
+	active char(1),
+	datetimeins timestamp,
+	code_category integer,
+	constraint additional_pk1 primary key (code),
+	constraint additional_fk1 foreign key (code_category) references gcsystem.category(code));
+	
+create table if not exists gcsystem.request(
+	code serial not null,
+	status varchar(20),
+	datetimeins timestamp,
+	datetimeend timestamp,
+	code_guestcheck integer,
+	code_tablelist integer,
+	code_userlogin integer,
+	code_company integer,
+	constraint request_pk1 primary key (code),
+	constraint request_fk1 foreign key (code_guestcheck) references gcsystem.guestcheck(code),
+	constraint request_fk2 foreign key (code_tablelist) references gcsystem.tablelist(code),
+	constraint request_fk3 foreign key (code_userlogin) references gcsystem.userlogin(code),
+	constraint request_fk4 foreign key (code_company) references gcsystem.company(code));
+	
+create table if not exists gcsystem.requestpay(
+	code serial not null,
+	price decimal(12,2),
+	typepay char(3),
+	code_request integer,
+	code_userlogin integer,
+	constraint requestpay_pk1 primary key (code),
+	constraint requestpay_fk1 foreign key (code_request) references gcsystem.request(code),
+	constraint requestpay_fk2 foreign key (code_userlogin) references gcsystem.userlogin(code));
+		
+create table if not exists gcsystem.requestproduct(
+	code serial not null,
+	status varchar(20),
+	countproduct integer,
+	note varchar(150),
+	requeststart char(1),
+	datetimeins timestamp,
+	datetimeupd timestamp,
+	code_request integer,
+	code_product integer,
+	constraint requestproduct_pk1 primary key (code),
+	constraint requestproduct_fk1 foreign key (code_request) references gcsystem.request(code),
+	constraint requestproduct_fk2 foreign key (code_product) references gcsystem.product(code));
+	
+create table if not exists gcsystem.requestproductadditional(
+	code serial not null,
+	code_requestproduct integer,
+	code_additional integer,
+	constraint requestproductadditional_pk1 primary key (code),
+	constraint requestproductadditional_fk1 foreign key (code_requestproduct) references gcsystem.requestproduct(code),
+	constraint requestproductadditional_fk2 foreign key (code_additional) references gcsystem.additional(code));
+	
+create table if not exists gcsystem.filterhistory(
+	code serial not null,
+	code_category integer,
+	code_userlogin integer,
+	constraint filterhistory_pk1 primary key (code),
+	constraint filterhistory_fk1 foreign key (code_category) references gcsystem.category(code),
+	constraint filterhistory_fk2 foreign key (code_userlogin) references gcsystem.userlogin(code));
+	
+create table if not exists gcsystem.comboproduct(
+	code serial not null,
+	countproduct integer,
+	code_product integer,
+	code_comboproduct integer,
+	constraint comboproduct_pk1 primary key (code),
+	constraint comboproduct_fk1 foreign key (code_product) references gcsystem.product(code),
+	constraint comboproduct_fk2 foreign key (code_comboproduct) references gcsystem.product(code));
+	
+create table if not exists gcsystem.additionalproduct(
+	code serial not null,
+	code_additional integer,
+	code_product integer,
+	constraint additionalproduct_pk1 primary key (code),
+	constraint additionalproduct_fk1 foreign key (code_additional) references gcsystem.additional(code),
+	constraint additionalproduct_fk2 foreign key (code_product) references gcsystem.product(code));	
+
+--Index
+create unique index if not exists tablelist_idxu1 on gcsystem.tablelist(description);
+create unique index if not exists guestcheck_idxu1 on gcsystem.guestcheck(barcode);
+create unique index if not exists requestproductadditional_idxu1 on gcsystem.requestproductadditional(code_requestproduct,code_additional);
+create unique index if not exists userlogin_idxu1 on gcsystem.userlogin(login);
+create index if not exists product_idx1 on gcsystem.product(barcode);
+
+--Insert
+insert into gcsystem.company (code,name,cnpj,address,numberaddress,complement,district,city,uf,zipcode,active) values (nextval('gcsystem.company_code_seq'),'Matriz',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'t');
+insert into gcsystem.userlogin (code,name,login,password,active) values (nextval('gcsystem.userlogin_code_seq'),'Macro Tech','root','root123','t') on conflict (login) do nothing;
+insert into gcsystem.multicompany (code,code_userlogin,code_company) values (nextval('gcsystem.multicompany_code_seq'),1,1);
+insert into gcsystem.userpermission (code,manager,cashier,attendant) values (1,'t','t','t') on conflict (code) do nothing;
+insert into gcsystem.category (code,description) values (nextval('gcsystem.category_code_seq'),'COMBOS') on conflict (code) do nothing;
+
+insert into gcsystem.systemview (code,name,classname) values (1,'Caixa','ViewCashRegister') on conflict (code) do nothing;
+insert into gcsystem.systemview (code,name,classname) values (2,'Entrega de Pedidos','ViewDeliveryRequest') on conflict (code) do nothing;
+insert into gcsystem.systemview (code,name,classname) values (3,'Login','ViewLogin') on conflict (code) do nothing;
+insert into gcsystem.systemview (code,name,classname) values (4,'Menu Principal','ViewMenuSystem') on conflict (code) do nothing;
+insert into gcsystem.systemview (code,name,classname) values (5,'Preparação de Pedidos','ViewPreparationRequest') on conflict (code) do nothing;
+insert into gcsystem.systemview (code,name,classname) values (6,'Cadastro de Adicionais','ViewRegisterAdditional') on conflict (code) do nothing;
+insert into gcsystem.systemview (code,name,classname) values (7,'Cadastro de Categorias','ViewRegisterCategory') on conflict (code) do nothing;
+insert into gcsystem.systemview (code,name,classname) values (8,'Cadastro de Combos','ViewRegisterComboproduct') on conflict (code) do nothing;
+insert into gcsystem.systemview (code,name,classname) values (9,'Cadastro de Comandas','ViewRegisterGuestCheck') on conflict (code) do nothing;
+insert into gcsystem.systemview (code,name,classname) values (10,'Cadastro de Itens','ViewRegisterproduct') on conflict (code) do nothing;
+insert into gcsystem.systemview (code,name,classname) values (11,'Realização de Pedidos','ViewRegisterRequest') on conflict (code) do nothing;
+insert into gcsystem.systemview (code,name,classname) values (12,'Cadastro de Mesas','ViewRegisterTableList') on conflict (code) do nothing;
+
+COMMIT;

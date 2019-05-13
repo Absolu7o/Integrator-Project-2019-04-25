@@ -1,0 +1,85 @@
+BEGIN;
+
+--Schema
+create schema if not exists macrotech;
+
+--Tabelas
+create table if not exists macrotech.company(
+	code serial not null,
+	name varchar(60),
+	cnpj char(14),
+	address varchar(60),
+	numberaddress varchar(10),
+	complement varchar(40),
+	district varchar(60),
+	city varchar(60),
+	uf char(2),
+	zipcode char(8),
+	active char(1),
+	constraint company_pk1 primary key (code));
+	
+create table if not exists macrotech.userlogin(
+	code serial not null,
+	name varchar(60),
+	login varchar(20),
+	password varchar(100),
+	active char(1),
+	constraint userlogin_pk1 primary key (code));
+
+create table if not exists macrotech.systemview(
+	code integer not null,
+	name varchar(60),
+	classname varchar(60),
+	constraint systemview_pk1 primary key (code));
+	
+create table if not exists macrotech.userpermission(
+	code integer not null,
+	manager char(1),
+	cashier char(1),
+	attendant char(1),
+	constraint userpermission_pk1 primary key (code),
+	constraint userpermission_fk1 foreign key (code) references macrotech.userlogin(code));
+	
+create table if not exists macrotech.userlog(
+	code serial not null,
+	datetimeins timestamp,
+	logtype varchar(20),
+	code_userlogin integer,
+	code_company integer,
+	code_systemview integer,
+	constraint userlog_pk1 primary key (code),
+	constraint userlog_fk1 foreign key (code_userlogin) references macrotech.userlogin(code),
+	constraint userlog_fk2 foreign key (code_company) references macrotech.company(code),
+	constraint userlog_fk3 foreign key (code_systemview) references macrotech.systemview(code));
+	
+create table if not exists macrotech.multicompany(
+	code serial not null,
+	code_userlogin integer,
+	code_company integer,
+	constraint multicompany_pk1 primary key (code),
+	constraint multicompany_fk1 foreign key (code_userlogin) references macrotech.userlogin(code),
+	constraint multicompany_fk2 foreign key (code_company) references macrotech.company(code));
+
+--Index
+create unique index if not exists userlogin_idxu1 on macrotech.userlogin(login);
+
+--Insert
+insert into macrotech.company (code,name,cnpj,address,numberaddress,complement,district,city,uf,zipcode,active) values (nextval('macrotech.company_code_seq'),'Matriz',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'t');
+insert into macrotech.userlogin (code,name,login,password,active) values (nextval('macrotech.userlogin_code_seq'),'Macro Tech','root','root123','t') on conflict (login) do nothing;
+insert into macrotech.multicompany (code,code_userlogin,code_company) values (nextval('macrotech.multicompany_code_seq'),1,1);
+insert into macrotech.userpermission (code,manager,cashier,attendant) values (1,'t','t','t') on conflict (code) do nothing;
+
+insert into macrotech.systemview (code,name,classname) values (1,'Caixa','ViewCashRegister') on conflict (code) do nothing;
+insert into macrotech.systemview (code,name,classname) values (2,'Entrega de Pedidos','ViewDeliveryRequest') on conflict (code) do nothing;
+insert into macrotech.systemview (code,name,classname) values (3,'Login','ViewLogin') on conflict (code) do nothing;
+insert into macrotech.systemview (code,name,classname) values (4,'Menu Principal','ViewMenuSystem') on conflict (code) do nothing;
+insert into macrotech.systemview (code,name,classname) values (5,'Preparação de Pedidos','ViewPreparationRequest') on conflict (code) do nothing;
+insert into macrotech.systemview (code,name,classname) values (6,'Cadastro de Adicionais','ViewRegisterAdditional') on conflict (code) do nothing;
+insert into macrotech.systemview (code,name,classname) values (7,'Cadastro de Categorias','ViewRegisterCategory') on conflict (code) do nothing;
+insert into macrotech.systemview (code,name,classname) values (8,'Cadastro de Combos','ViewRegisterComboproduct') on conflict (code) do nothing;
+insert into macrotech.systemview (code,name,classname) values (9,'Cadastro de Comandas','ViewRegisterGuestCheck') on conflict (code) do nothing;
+insert into macrotech.systemview (code,name,classname) values (10,'Cadastro de Itens','ViewRegisterproduct') on conflict (code) do nothing;
+insert into macrotech.systemview (code,name,classname) values (11,'Realização de Pedidos','ViewRegisterRequest') on conflict (code) do nothing;
+insert into macrotech.systemview (code,name,classname) values (12,'Cadastro de Mesas','ViewRegisterTableList') on conflict (code) do nothing;
+
+COMMIT;

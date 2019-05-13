@@ -1,0 +1,14 @@
+BEGIN;
+
+--Tabelas
+drop table if exists macrotech.multicompany;
+drop table if exists macrotech.userlog;
+drop table if exists macrotech.userpermission;
+drop table if exists macrotech.systemview;
+drop table if exists macrotech.userlogin;
+drop table if exists macrotech.company;
+
+--Schema
+drop schema if exists macrotech;
+
+COMMIT;

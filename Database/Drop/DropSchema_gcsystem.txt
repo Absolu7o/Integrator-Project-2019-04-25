@@ -1,0 +1,20 @@
+BEGIN;
+
+--Tabelas
+drop table if exists gcsystem.additionalproduct;
+drop table if exists gcsystem.comboproduct;
+drop table if exists gcsystem.filterhistory;
+drop table if exists gcsystem.requestproductadditional;
+drop table if exists gcsystem.requestproduct;
+drop table if exists gcsystem.requestpay;
+drop table if exists gcsystem.request;
+drop table if exists gcsystem.additional;
+drop table if exists gcsystem.product;
+drop table if exists gcsystem.productcategory;
+drop table if exists gcsystem.guestcheck;
+drop table if exists gcsystem.tablelist;
+
+--Schema
+drop schema if exists gcsystem;
+
+COMMIT;

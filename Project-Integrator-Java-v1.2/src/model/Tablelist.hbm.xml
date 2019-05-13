@@ -1,26 +1,25 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
-<!-- Generated 25/04/2019 00:40:21 by Hibernate Tools 4.3.1 -->
+<!-- Generated 12/05/2019 21:50:58 by Hibernate Tools 4.3.1 -->
 <hibernate-mapping>
     <class name="model.Tablelist" table="tablelist" schema="gcsystem" optimistic-lock="version">
         <id name="code" type="int">
             <column name="code" />
-            <generator class="sequence">
-                <param name="sequence">
-                    gcsystem.tablelist_code_seq
-                </param>
-            </generator>
+            <generator class="assigned" />
         </id>
         <property name="description" type="string">
-            <column name="description" length="10" />
+            <column name="description" length="10" unique="true" />
         </property>
-        <property name="active" type="string">
-            <column name="active" length="3" />
+        <property name="active" type="java.lang.Character">
+            <column name="active" length="1" />
+        </property>
+        <property name="codeCompany" type="java.lang.Integer">
+            <column name="code_company" />
         </property>
         <set name="requests" table="request" inverse="true" lazy="true" fetch="select">
             <key>
-                <column name="code_tablelist" not-null="true" />
+                <column name="code_tablelist" />
             </key>
             <one-to-many class="model.Request" />
         </set>

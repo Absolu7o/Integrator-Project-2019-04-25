@@ -1,40 +1,39 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
-<!-- Generated 25/04/2019 00:40:21 by Hibernate Tools 4.3.1 -->
+<!-- Generated 12/05/2019 21:50:58 by Hibernate Tools 4.3.1 -->
 <hibernate-mapping>
     <class name="model.Additional" table="additional" schema="gcsystem" optimistic-lock="version">
         <id name="code" type="int">
             <column name="code" />
-            <generator class="sequence">
-                <param name="sequence">
-                    gcsystem.additional_code_seq
-                </param>
-            </generator>
+            <generator class="assigned" />
         </id>
-        <many-to-one name="category" class="model.Category" fetch="select">
-            <column name="code_category" not-null="true" />
+        <many-to-one name="productcategory" class="model.Productcategory" fetch="select">
+            <column name="code_productcategory" />
         </many-to-one>
         <property name="description" type="string">
             <column name="description" length="40" />
         </property>
-        <property name="price" type="big_decimal">
-            <column name="price" precision="6" />
+        <property name="price" type="float">
+            <column name="price" length="1" />
         </property>
-        <property name="active" type="string">
-            <column name="active" length="3" />
+        <property name="active" type="java.lang.Character">
+            <column name="active" length="1" />
         </property>
-        <set name="requestadditionalitems" table="requestadditionalitem" inverse="true" lazy="true" fetch="select">
+        <property name="datetimeins" type="timestamp">
+            <column name="datetimeins" length="29" />
+        </property>
+        <set name="requestproductadditionals" table="requestproductadditional" inverse="true" lazy="true" fetch="select">
             <key>
-                <column name="code_additional" not-null="true" />
+                <column name="code_additional" />
             </key>
-            <one-to-many class="model.Requestadditionalitem" />
+            <one-to-many class="model.Requestproductadditional" />
         </set>
-        <set name="additionalitems" table="additionalitem" inverse="true" lazy="true" fetch="select">
+        <set name="additionalproducts" table="additionalproduct" inverse="true" lazy="true" fetch="select">
             <key>
-                <column name="code_additional" not-null="true" />
+                <column name="code_additional" />
             </key>
-            <one-to-many class="model.Additionalitem" />
+            <one-to-many class="model.Additionalproduct" />
         </set>
     </class>
 </hibernate-mapping>

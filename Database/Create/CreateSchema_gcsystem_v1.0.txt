@@ -1,0 +1,132 @@
+BEGIN;
+
+--Schema
+create schema if not exists gcsystem;
+
+--Tabelas
+create table if not exists gcsystem.tablelist(
+	code serial not null,
+	description varchar(10),
+	active char(1),
+	code_company integer,
+	constraint tablelist_pk1 primary key (code),
+	constraint tablelist_fk1 foreign key (code_company) references macrotech.company(code));
+	
+create table if not exists gcsystem.guestcheck(
+	code serial not null,
+	barcode char(7),
+	active char(1),
+	code_company integer,
+	constraint guestcheck_pk1 primary key (code),
+	constraint guestcheck_fk1 foreign key (code_company) references macrotech.company(code));
+	
+create table if not exists gcsystem.productcategory(
+	code serial not null,
+	description varchar(40),
+	constraint productcategory_pk1 primary key (code));
+	
+create table if not exists gcsystem.product(
+	code serial not null,
+	barcode char(9),
+	description varchar(40),
+	price decimal(12,2),
+	preparation varchar(20),
+	additional char(3),
+	active char(1),
+	datetimeins timestamp,
+	code_productcategory integer,
+	constraint product_pk1 primary key (code),
+	constraint product_fk1 foreign key (code_productcategory) references gcsystem.productcategory(code));
+	
+create table if not exists gcsystem.additional(
+	code serial not null,
+	description varchar(40),
+	price decimal(12,2),
+	active char(1),
+	datetimeins timestamp,
+	code_productcategory integer,
+	constraint additional_pk1 primary key (code),
+	constraint additional_fk1 foreign key (code_productcategory) references gcsystem.productcategory(code));
+	
+create table if not exists gcsystem.request(
+	code serial not null,
+	status varchar(20),
+	datetimeins timestamp,
+	datetimeend timestamp,
+	code_guestcheck integer,
+	code_tablelist integer,
+	code_userlogin integer,
+	code_company integer,
+	constraint request_pk1 primary key (code),
+	constraint request_fk1 foreign key (code_guestcheck) references gcsystem.guestcheck(code),
+	constraint request_fk2 foreign key (code_tablelist) references gcsystem.tablelist(code),
+	constraint request_fk3 foreign key (code_userlogin) references macrotech.userlogin(code),
+	constraint request_fk4 foreign key (code_company) references macrotech.company(code));
+	
+create table if not exists gcsystem.requestpay(
+	code serial not null,
+	price decimal(12,2),
+	typepay char(3),
+	code_request integer,
+	code_userlogin integer,
+	constraint requestpay_pk1 primary key (code),
+	constraint requestpay_fk1 foreign key (code_request) references gcsystem.request(code),
+	constraint requestpay_fk2 foreign key (code_userlogin) references macrotech.userlogin(code));
+		
+create table if not exists gcsystem.requestproduct(
+	code serial not null,
+	status varchar(20),
+	countproduct integer,
+	note varchar(150),
+	requeststart char(1),
+	datetimeins timestamp,
+	datetimeupd timestamp,
+	code_request integer,
+	code_product integer,
+	constraint requestproduct_pk1 primary key (code),
+	constraint requestproduct_fk1 foreign key (code_request) references gcsystem.request(code),
+	constraint requestproduct_fk2 foreign key (code_product) references gcsystem.product(code));
+	
+create table if not exists gcsystem.requestproductadditional(
+	code serial not null,
+	code_requestproduct integer,
+	code_additional integer,
+	constraint requestproductadditional_pk1 primary key (code),
+	constraint requestproductadditional_fk1 foreign key (code_requestproduct) references gcsystem.requestproduct(code),
+	constraint requestproductadditional_fk2 foreign key (code_additional) references gcsystem.additional(code));
+	
+create table if not exists gcsystem.filterhistory(
+	code serial not null,
+	code_productcategory integer,
+	code_userlogin integer,
+	constraint filterhistory_pk1 primary key (code),
+	constraint filterhistory_fk1 foreign key (code_productcategory) references gcsystem.productcategory(code),
+	constraint filterhistory_fk2 foreign key (code_userlogin) references macrotech.userlogin(code));
+	
+create table if not exists gcsystem.comboproduct(
+	code serial not null,
+	countproduct integer,
+	code_product integer,
+	code_comboproduct integer,
+	constraint comboproduct_pk1 primary key (code),
+	constraint comboproduct_fk1 foreign key (code_product) references gcsystem.product(code),
+	constraint comboproduct_fk2 foreign key (code_comboproduct) references gcsystem.product(code));
+	
+create table if not exists gcsystem.additionalproduct(
+	code serial not null,
+	code_additional integer,
+	code_product integer,
+	constraint additionalproduct_pk1 primary key (code),
+	constraint additionalproduct_fk1 foreign key (code_additional) references gcsystem.additional(code),
+	constraint additionalproduct_fk2 foreign key (code_product) references gcsystem.product(code));	
+
+--Index
+create unique index if not exists tablelist_idxu1 on gcsystem.tablelist(description);
+create unique index if not exists guestcheck_idxu1 on gcsystem.guestcheck(barcode);
+create unique index if not exists requestproductadditional_idxu1 on gcsystem.requestproductadditional(code_requestproduct,code_additional);
+create index if not exists product_idx1 on gcsystem.product(barcode);
+
+--Insert
+insert into gcsystem.productcategory (code,description) values (nextval('gcsystem.productcategory_code_seq'),'COMBOS') on conflict (code) do nothing;
+
+COMMIT;
