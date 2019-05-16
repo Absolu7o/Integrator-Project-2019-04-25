@@ -3,25 +3,37 @@
 <hibernate-configuration>
   <session-factory>
     <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
+    <property name="hibernate.show_sql">true</property>
+    <property name="hibernate.format_sql">true</property>
     <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
     <property name="hibernate.connection.url">jdbc:postgresql://localhost:5432/MacroTech</property>
     <property name="hibernate.connection.username">postgres</property>
     <property name="hibernate.connection.password">Bsi2017</property>
     <property name="hibernate.current_session_context_class">thread</property>
-    <mapping resource="model/Userlog.hbm.xml"/>
-    <mapping resource="model/Tablelist.hbm.xml"/>
+    <mapping resource="model/Comboproductadditional.hbm.xml"/>
+    <mapping resource="model/Productcompany.hbm.xml"/>
+    <mapping resource="model/Guestcheck.hbm.xml"/>
+    <mapping resource="model/Additionalcompany.hbm.xml"/>
+    <mapping resource="model/Usercompany.hbm.xml"/>
     <mapping resource="model/Item.hbm.xml"/>
-    <mapping resource="model/Requestitem.hbm.xml"/>
-    <mapping resource="model/Systemview.hbm.xml"/>
-    <mapping resource="model/Userpermission.hbm.xml"/>
-    <mapping resource="model/Category.hbm.xml"/>
-    <mapping resource="model/Requestadditionalitem.hbm.xml"/>
-    <mapping resource="model/Additional.hbm.xml"/>
+    <mapping resource="model/Requestproductadditional.hbm.xml"/>
+    <mapping resource="model/Itemcompany.hbm.xml"/>
+    <mapping resource="model/Itemlog.hbm.xml"/>
+    <mapping resource="model/Requestproduct.hbm.xml"/>
+    <mapping resource="model/Request.hbm.xml"/>
+    <mapping resource="model/Tablelist.hbm.xml"/>
+    <mapping resource="model/Userlog.hbm.xml"/>
     <mapping resource="model/Filterhistory.hbm.xml"/>
     <mapping resource="model/Userlogin.hbm.xml"/>
-    <mapping resource="model/Comboitem.hbm.xml"/>
-    <mapping resource="model/Guestcheck.hbm.xml"/>
-    <mapping resource="model/Request.hbm.xml"/>
-    <mapping resource="model/Additionalitem.hbm.xml"/>
+    <mapping resource="model/Comboproduct.hbm.xml"/>
+    <mapping resource="model/Company.hbm.xml"/>
+    <mapping resource="model/Product.hbm.xml"/>
+    <mapping resource="model/Itemcategory.hbm.xml"/>
+    <mapping resource="model/Userpermission.hbm.xml"/>
+    <mapping resource="model/Additional.hbm.xml"/>
+    <mapping resource="model/Requestpay.hbm.xml"/>
+    <mapping resource="model/Systemview.hbm.xml"/>
+    <mapping resource="model/Productadditional.hbm.xml"/>
+    <mapping resource="model/Productcategory.hbm.xml"/>
   </session-factory>
 </hibernate-configuration>

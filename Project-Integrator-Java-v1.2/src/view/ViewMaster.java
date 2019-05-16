@@ -34,7 +34,7 @@ public abstract class ViewMaster {
     static Color colorDefaultBlack = Color.decode("#000000"); // Preto
     static Color colorDefaultBlue = Color.decode("#0030FF"); // Azul
     static Color colorDefaultBackground = Color.decode("#F4F4F4"); // Branco Cinzento //#D4D4D4
-
+    
     public static void setConstraints() {
 
         c.insets = new Insets(2, 2, 2, 2);
@@ -85,13 +85,13 @@ public abstract class ViewMaster {
 
             }
         });
-
+        
         frame.setExtendedState(frame.MAXIMIZED_BOTH);
         //frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.add(pane);
 
     }
-
+    
     public void setFrameAndPane(String title, int row, int column) {
 
         pane.setVisible(false);
@@ -149,6 +149,8 @@ public abstract class ViewMaster {
 
     public JTable setDefaultTableList(JTable table, int gridy, int gridx, int gridheight, int gridwidth, String text) {
 
+        table.setRowSelectionAllowed(true);
+        table.setDefaultEditor(Object.class, null);
         table.setFont(fontText);
         table.setBackground(colorDefaultBlue);
         table.setForeground(colorDefaultBlack);
@@ -157,8 +159,8 @@ public abstract class ViewMaster {
 
         return table;
     }
-
-    public JTextField setDefaultField(JTextField field, int gridy, int gridx, int gridheight, int gridwidth,
+    
+     public JTextField setDefaultField(JTextField field, int gridy, int gridx, int gridheight, int gridwidth,
             String text) {
 
         field.setPreferredSize(sizeDefault);

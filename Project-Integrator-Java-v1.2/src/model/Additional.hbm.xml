@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
-<!-- Generated 12/05/2019 21:50:58 by Hibernate Tools 4.3.1 -->
+<!-- Generated 15/05/2019 21:27:18 by Hibernate Tools 4.3.1 -->
 <hibernate-mapping>
     <class name="model.Additional" table="additional" schema="gcsystem" optimistic-lock="version">
         <id name="code" type="int">
@@ -14,26 +14,35 @@
         <property name="description" type="string">
             <column name="description" length="40" />
         </property>
-        <property name="price" type="float">
-            <column name="price" length="1" />
-        </property>
-        <property name="active" type="java.lang.Character">
-            <column name="active" length="1" />
+        <property name="price" type="big_decimal">
+            <column name="price" precision="12" />
         </property>
         <property name="datetimeins" type="timestamp">
             <column name="datetimeins" length="29" />
         </property>
+        <set name="comboproductadditionals" table="comboproductadditional" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="code_additional" />
+            </key>
+            <one-to-many class="model.Comboproductadditional" />
+        </set>
         <set name="requestproductadditionals" table="requestproductadditional" inverse="true" lazy="true" fetch="select">
             <key>
                 <column name="code_additional" />
             </key>
             <one-to-many class="model.Requestproductadditional" />
         </set>
-        <set name="additionalproducts" table="additionalproduct" inverse="true" lazy="true" fetch="select">
+        <set name="additionalcompanies" table="additionalcompany" inverse="true" lazy="true" fetch="select">
             <key>
                 <column name="code_additional" />
             </key>
-            <one-to-many class="model.Additionalproduct" />
+            <one-to-many class="model.Additionalcompany" />
+        </set>
+        <set name="productadditionals" table="productadditional" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="code_additional" />
+            </key>
+            <one-to-many class="model.Productadditional" />
         </set>
     </class>
 </hibernate-mapping>

@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 15/05/2019 21:27:18 by Hibernate Tools 4.3.1 -->
+<hibernate-mapping>
+    <class name="model.Product" table="product" schema="gcsystem" optimistic-lock="version">
+        <id name="code" type="int">
+            <column name="code" />
+            <generator class="assigned" />
+        </id>
+        <many-to-one name="productcategory" class="model.Productcategory" fetch="select">
+            <column name="code_productcategory" />
+        </many-to-one>
+        <property name="barcode" type="string">
+            <column name="barcode" length="9" />
+        </property>
+        <property name="productseq" type="java.lang.Integer">
+            <column name="productseq" />
+        </property>
+        <property name="description" type="string">
+            <column name="description" length="40" />
+        </property>
+        <property name="price" type="big_decimal">
+            <column name="price" precision="12" />
+        </property>
+        <property name="preparation" type="string">
+            <column name="preparation" length="20" />
+        </property>
+        <property name="additional" type="java.lang.Boolean">
+            <column name="additional" />
+        </property>
+        <property name="datetimeins" type="timestamp">
+            <column name="datetimeins" length="29" />
+        </property>
+        <set name="productcompanies" table="productcompany" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="code_product" />
+            </key>
+            <one-to-many class="model.Productcompany" />
+        </set>
+        <set name="requestproducts" table="requestproduct" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="code_product" />
+            </key>
+            <one-to-many class="model.Requestproduct" />
+        </set>
+        <set name="comboproductsForCodeProduct" table="comboproduct" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="code_product" />
+            </key>
+            <one-to-many class="model.Comboproduct" />
+        </set>
+        <set name="comboproductsForCodeComboproduct" table="comboproduct" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="code_comboproduct" />
+            </key>
+            <one-to-many class="model.Comboproduct" />
+        </set>
+        <set name="productadditionals" table="productadditional" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="code_product" />
+            </key>
+            <one-to-many class="model.Productadditional" />
+        </set>
+    </class>
+</hibernate-mapping>

@@ -1,5 +1,5 @@
 package model;
-// Generated 12/05/2019 21:50:56 by Hibernate Tools 4.3.1
+// Generated 15/05/2019 21:27:16 by Hibernate Tools 4.3.1
 
 
 import javax.persistence.Column;
@@ -22,7 +22,7 @@ public class Filterhistory  implements java.io.Serializable {
 
      private int code;
      private Productcategory productcategory;
-     private Integer codeUserlogin;
+     private Userlogin userlogin;
 
     public Filterhistory() {
     }
@@ -31,10 +31,10 @@ public class Filterhistory  implements java.io.Serializable {
     public Filterhistory(int code) {
         this.code = code;
     }
-    public Filterhistory(int code, Productcategory productcategory, Integer codeUserlogin) {
+    public Filterhistory(int code, Productcategory productcategory, Userlogin userlogin) {
        this.code = code;
        this.productcategory = productcategory;
-       this.codeUserlogin = codeUserlogin;
+       this.userlogin = userlogin;
     }
    
      @Id 
@@ -59,14 +59,14 @@ public class Filterhistory  implements java.io.Serializable {
         this.productcategory = productcategory;
     }
 
-    
-    @Column(name="code_userlogin")
-    public Integer getCodeUserlogin() {
-        return this.codeUserlogin;
+@ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name="code_userlogin")
+    public Userlogin getUserlogin() {
+        return this.userlogin;
     }
     
-    public void setCodeUserlogin(Integer codeUserlogin) {
-        this.codeUserlogin = codeUserlogin;
+    public void setUserlogin(Userlogin userlogin) {
+        this.userlogin = userlogin;
     }
 
 

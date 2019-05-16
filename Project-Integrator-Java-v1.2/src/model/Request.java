@@ -1,5 +1,5 @@
 package model;
-// Generated 12/05/2019 21:50:56 by Hibernate Tools 4.3.1
+// Generated 15/05/2019 21:27:16 by Hibernate Tools 4.3.1
 
 
 import java.util.Date;
@@ -27,13 +27,13 @@ public class Request  implements java.io.Serializable {
 
 
      private int code;
+     private Company company;
      private Guestcheck guestcheck;
      private Tablelist tablelist;
+     private Userlogin userlogin;
      private String status;
      private Date datetimeins;
      private Date datetimeend;
-     private Integer codeUserlogin;
-     private Integer codeCompany;
      private Set<Requestproduct> requestproducts = new HashSet<Requestproduct>(0);
      private Set<Requestpay> requestpays = new HashSet<Requestpay>(0);
 
@@ -44,15 +44,15 @@ public class Request  implements java.io.Serializable {
     public Request(int code) {
         this.code = code;
     }
-    public Request(int code, Guestcheck guestcheck, Tablelist tablelist, String status, Date datetimeins, Date datetimeend, Integer codeUserlogin, Integer codeCompany, Set<Requestproduct> requestproducts, Set<Requestpay> requestpays) {
+    public Request(int code, Company company, Guestcheck guestcheck, Tablelist tablelist, Userlogin userlogin, String status, Date datetimeins, Date datetimeend, Set<Requestproduct> requestproducts, Set<Requestpay> requestpays) {
        this.code = code;
+       this.company = company;
        this.guestcheck = guestcheck;
        this.tablelist = tablelist;
+       this.userlogin = userlogin;
        this.status = status;
        this.datetimeins = datetimeins;
        this.datetimeend = datetimeend;
-       this.codeUserlogin = codeUserlogin;
-       this.codeCompany = codeCompany;
        this.requestproducts = requestproducts;
        this.requestpays = requestpays;
     }
@@ -67,6 +67,16 @@ public class Request  implements java.io.Serializable {
     
     public void setCode(int code) {
         this.code = code;
+    }
+
+@ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name="code_company")
+    public Company getCompany() {
+        return this.company;
+    }
+    
+    public void setCompany(Company company) {
+        this.company = company;
     }
 
 @ManyToOne(fetch=FetchType.LAZY)
@@ -87,6 +97,16 @@ public class Request  implements java.io.Serializable {
     
     public void setTablelist(Tablelist tablelist) {
         this.tablelist = tablelist;
+    }
+
+@ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name="code_userlogin")
+    public Userlogin getUserlogin() {
+        return this.userlogin;
+    }
+    
+    public void setUserlogin(Userlogin userlogin) {
+        this.userlogin = userlogin;
     }
 
     
@@ -117,26 +137,6 @@ public class Request  implements java.io.Serializable {
     
     public void setDatetimeend(Date datetimeend) {
         this.datetimeend = datetimeend;
-    }
-
-    
-    @Column(name="code_userlogin")
-    public Integer getCodeUserlogin() {
-        return this.codeUserlogin;
-    }
-    
-    public void setCodeUserlogin(Integer codeUserlogin) {
-        this.codeUserlogin = codeUserlogin;
-    }
-
-    
-    @Column(name="code_company")
-    public Integer getCodeCompany() {
-        return this.codeCompany;
-    }
-    
-    public void setCodeCompany(Integer codeCompany) {
-        this.codeCompany = codeCompany;
     }
 
 @OneToMany(fetch=FetchType.LAZY, mappedBy="request")

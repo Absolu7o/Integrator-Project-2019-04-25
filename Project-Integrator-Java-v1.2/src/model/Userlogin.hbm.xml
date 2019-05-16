@@ -1,16 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
-<!-- Generated 25/04/2019 00:40:21 by Hibernate Tools 4.3.1 -->
+<!-- Generated 15/05/2019 21:27:18 by Hibernate Tools 4.3.1 -->
 <hibernate-mapping>
     <class name="model.Userlogin" table="userlogin" schema="gcsystem" optimistic-lock="version">
         <id name="code" type="int">
             <column name="code" />
-            <generator class="sequence">
-                <param name="sequence">
-                    gcsystem.userlogin_code_seq
-                </param>
-            </generator>
+            <generator class="assigned" />
         </id>
         <property name="name" type="string">
             <column name="name" length="60" />
@@ -21,12 +17,24 @@
         <property name="password" type="string">
             <column name="password" length="100" />
         </property>
-        <property name="active" type="string">
-            <column name="active" length="3" />
+        <property name="available" type="java.lang.Boolean">
+            <column name="available" />
         </property>
+        <set name="usercompanies" table="usercompany" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="code_userlogin" />
+            </key>
+            <one-to-many class="model.Usercompany" />
+        </set>
+        <set name="itemlogs" table="itemlog" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="code_userlogin" />
+            </key>
+            <one-to-many class="model.Itemlog" />
+        </set>
         <set name="filterhistories" table="filterhistory" inverse="true" lazy="true" fetch="select">
             <key>
-                <column name="code_userlogin" not-null="true" />
+                <column name="code_userlogin" />
             </key>
             <one-to-many class="model.Filterhistory" />
         </set>
@@ -36,10 +44,16 @@
             </key>
             <one-to-many class="model.Userlog" />
         </set>
+        <set name="requestpays" table="requestpay" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="code_userlogin" />
+            </key>
+            <one-to-many class="model.Requestpay" />
+        </set>
         <one-to-one name="userpermission" class="model.Userpermission"></one-to-one>
         <set name="requests" table="request" inverse="true" lazy="true" fetch="select">
             <key>
-                <column name="code_userlogin" not-null="true" />
+                <column name="code_userlogin" />
             </key>
             <one-to-many class="model.Request" />
         </set>

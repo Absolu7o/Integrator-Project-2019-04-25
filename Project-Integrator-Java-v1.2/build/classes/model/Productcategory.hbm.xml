@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 15/05/2019 21:27:18 by Hibernate Tools 4.3.1 -->
+<hibernate-mapping>
+    <class name="model.Productcategory" table="productcategory" schema="gcsystem" optimistic-lock="version">
+        <id name="code" type="int">
+            <column name="code" />
+            <generator class="assigned" />
+        </id>
+        <property name="description" type="string">
+            <column name="description" length="40" />
+        </property>
+        <set name="products" table="product" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="code_productcategory" />
+            </key>
+            <one-to-many class="model.Product" />
+        </set>
+        <set name="additionals" table="additional" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="code_productcategory" />
+            </key>
+            <one-to-many class="model.Additional" />
+        </set>
+        <set name="filterhistories" table="filterhistory" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="code_productcategory" />
+            </key>
+            <one-to-many class="model.Filterhistory" />
+        </set>
+    </class>
+</hibernate-mapping>

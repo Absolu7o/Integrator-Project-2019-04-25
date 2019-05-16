@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 15/05/2019 21:27:18 by Hibernate Tools 4.3.1 -->
+<hibernate-mapping>
+    <class name="model.Requestpay" table="requestpay" schema="gcsystem" optimistic-lock="version">
+        <id name="code" type="int">
+            <column name="code" />
+            <generator class="assigned" />
+        </id>
+        <many-to-one name="request" class="model.Request" fetch="select">
+            <column name="code_request" />
+        </many-to-one>
+        <many-to-one name="userlogin" class="model.Userlogin" fetch="select">
+            <column name="code_userlogin" />
+        </many-to-one>
+        <property name="price" type="big_decimal">
+            <column name="price" precision="12" />
+        </property>
+        <property name="typepay" type="string">
+            <column name="typepay" length="3" />
+        </property>
+    </class>
+</hibernate-mapping>

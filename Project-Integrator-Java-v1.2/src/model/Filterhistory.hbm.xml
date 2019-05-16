@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
-<!-- Generated 12/05/2019 21:50:58 by Hibernate Tools 4.3.1 -->
+<!-- Generated 15/05/2019 21:27:18 by Hibernate Tools 4.3.1 -->
 <hibernate-mapping>
     <class name="model.Filterhistory" table="filterhistory" schema="gcsystem" optimistic-lock="version">
         <id name="code" type="int">
@@ -11,8 +11,8 @@
         <many-to-one name="productcategory" class="model.Productcategory" fetch="select">
             <column name="code_productcategory" />
         </many-to-one>
-        <property name="codeUserlogin" type="java.lang.Integer">
+        <many-to-one name="userlogin" class="model.Userlogin" fetch="select">
             <column name="code_userlogin" />
-        </property>
+        </many-to-one>
     </class>
 </hibernate-mapping>

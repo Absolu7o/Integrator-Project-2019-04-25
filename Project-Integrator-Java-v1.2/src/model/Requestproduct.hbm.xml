@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 15/05/2019 21:27:18 by Hibernate Tools 4.3.1 -->
+<hibernate-mapping>
+    <class name="model.Requestproduct" table="requestproduct" schema="gcsystem" optimistic-lock="version">
+        <id name="code" type="int">
+            <column name="code" />
+            <generator class="assigned" />
+        </id>
+        <many-to-one name="product" class="model.Product" fetch="select">
+            <column name="code_product" />
+        </many-to-one>
+        <many-to-one name="request" class="model.Request" fetch="select">
+            <column name="code_request" />
+        </many-to-one>
+        <property name="status" type="string">
+            <column name="status" length="20" />
+        </property>
+        <property name="countproduct" type="java.lang.Integer">
+            <column name="countproduct" />
+        </property>
+        <property name="note" type="string">
+            <column name="note" length="150" />
+        </property>
+        <property name="requeststart" type="java.lang.Boolean">
+            <column name="requeststart" />
+        </property>
+        <property name="datetimeins" type="timestamp">
+            <column name="datetimeins" length="29" />
+        </property>
+        <property name="datetimeupd" type="timestamp">
+            <column name="datetimeupd" length="29" />
+        </property>
+        <set name="requestproductadditionals" table="requestproductadditional" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="code_requestproduct" />
+            </key>
+            <one-to-many class="model.Requestproductadditional" />
+        </set>
+    </class>
+</hibernate-mapping>

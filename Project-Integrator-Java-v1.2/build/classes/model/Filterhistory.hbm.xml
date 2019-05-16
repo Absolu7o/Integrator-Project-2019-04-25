@@ -1,22 +1,18 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
-<!-- Generated 25/04/2019 00:40:21 by Hibernate Tools 4.3.1 -->
+<!-- Generated 15/05/2019 21:27:18 by Hibernate Tools 4.3.1 -->
 <hibernate-mapping>
     <class name="model.Filterhistory" table="filterhistory" schema="gcsystem" optimistic-lock="version">
         <id name="code" type="int">
             <column name="code" />
-            <generator class="sequence">
-                <param name="sequence">
-                    gcsystem.filterhistory_code_seq
-                </param>
-            </generator>
+            <generator class="assigned" />
         </id>
-        <many-to-one name="category" class="model.Category" fetch="select">
-            <column name="code_category" not-null="true" />
+        <many-to-one name="productcategory" class="model.Productcategory" fetch="select">
+            <column name="code_productcategory" />
         </many-to-one>
         <many-to-one name="userlogin" class="model.Userlogin" fetch="select">
-            <column name="code_userlogin" not-null="true" />
+            <column name="code_userlogin" />
         </many-to-one>
     </class>
 </hibernate-mapping>

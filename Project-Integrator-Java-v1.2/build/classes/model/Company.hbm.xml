@@ -1,0 +1,96 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 15/05/2019 21:27:18 by Hibernate Tools 4.3.1 -->
+<hibernate-mapping>
+    <class name="model.Company" table="company" schema="gcsystem" optimistic-lock="version">
+        <id name="code" type="int">
+            <column name="code" />
+            <generator class="assigned" />
+        </id>
+        <property name="name" type="string">
+            <column name="name" length="60" />
+        </property>
+        <property name="cnpj" type="string">
+            <column name="cnpj" length="14" />
+        </property>
+        <property name="address" type="string">
+            <column name="address" length="60" />
+        </property>
+        <property name="numberaddress" type="string">
+            <column name="numberaddress" length="10" />
+        </property>
+        <property name="complement" type="string">
+            <column name="complement" length="40" />
+        </property>
+        <property name="district" type="string">
+            <column name="district" length="60" />
+        </property>
+        <property name="city" type="string">
+            <column name="city" length="60" />
+        </property>
+        <property name="uf" type="string">
+            <column name="uf" length="2" />
+        </property>
+        <property name="zipcode" type="string">
+            <column name="zipcode" length="8" />
+        </property>
+        <property name="available" type="java.lang.Boolean">
+            <column name="available" />
+        </property>
+        <set name="itemcompanies" table="itemcompany" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="code_company" />
+            </key>
+            <one-to-many class="model.Itemcompany" />
+        </set>
+        <set name="guestchecks" table="guestcheck" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="code_company" />
+            </key>
+            <one-to-many class="model.Guestcheck" />
+        </set>
+        <set name="productcompanies" table="productcompany" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="code_company" />
+            </key>
+            <one-to-many class="model.Productcompany" />
+        </set>
+        <set name="itemlogs" table="itemlog" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="code_company" />
+            </key>
+            <one-to-many class="model.Itemlog" />
+        </set>
+        <set name="tablelists" table="tablelist" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="code_company" />
+            </key>
+            <one-to-many class="model.Tablelist" />
+        </set>
+        <set name="userlogs" table="userlog" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="code_company" />
+            </key>
+            <one-to-many class="model.Userlog" />
+        </set>
+        <set name="usercompanies" table="usercompany" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="code_company" />
+            </key>
+            <one-to-many class="model.Usercompany" />
+        </set>
+        <set name="requests" table="request" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="code_company" />
+            </key>
+            <one-to-many class="model.Request" />
+        </set>
+        <set name="additionalcompanies" table="additionalcompany" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="code_company" />
+            </key>
+            <one-to-many class="model.Additionalcompany" />
+        </set>
+    </class>
+</hibernate-mapping>

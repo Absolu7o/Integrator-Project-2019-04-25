@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 15/05/2019 21:27:18 by Hibernate Tools 4.3.1 -->
+<hibernate-mapping>
+    <class name="model.Itemcompany" table="itemcompany" schema="gcsystem" optimistic-lock="version">
+        <id name="code" type="int">
+            <column name="code" />
+            <generator class="assigned" />
+        </id>
+        <many-to-one name="company" class="model.Company" fetch="select">
+            <column name="code_company" />
+        </many-to-one>
+        <many-to-one name="item" class="model.Item" fetch="select">
+            <column name="code_item" />
+        </many-to-one>
+        <property name="priority" type="java.lang.Character">
+            <column name="priority" length="1" />
+        </property>
+        <property name="quantity" type="big_decimal">
+            <column name="quantity" precision="12" />
+        </property>
+        <property name="maxstock" type="big_decimal">
+            <column name="maxstock" precision="12" />
+        </property>
+        <property name="minstock" type="big_decimal">
+            <column name="minstock" precision="12" />
+        </property>
+        <property name="active" type="java.lang.Boolean">
+            <column name="active" />
+        </property>
+    </class>
+</hibernate-mapping>

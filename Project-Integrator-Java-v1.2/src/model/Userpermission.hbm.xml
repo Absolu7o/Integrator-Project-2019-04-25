@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
-<!-- Generated 25/04/2019 00:40:21 by Hibernate Tools 4.3.1 -->
+<!-- Generated 15/05/2019 21:27:18 by Hibernate Tools 4.3.1 -->
 <hibernate-mapping>
     <class name="model.Userpermission" table="userpermission" schema="gcsystem" optimistic-lock="version">
         <id name="code" type="int">
@@ -11,11 +11,17 @@
             </generator>
         </id>
         <one-to-one name="userlogin" class="model.Userlogin" constrained="true"></one-to-one>
-        <property name="cashier" type="java.lang.Character">
-            <column name="cashier" length="1" />
+        <property name="manager" type="java.lang.Boolean">
+            <column name="manager" />
         </property>
-        <property name="attendant" type="java.lang.Character">
-            <column name="attendant" length="1" />
+        <property name="cashier" type="java.lang.Boolean">
+            <column name="cashier" />
+        </property>
+        <property name="attendant" type="java.lang.Boolean">
+            <column name="attendant" />
+        </property>
+        <property name="stocker" type="java.lang.Boolean">
+            <column name="stocker" />
         </property>
     </class>
 </hibernate-mapping>

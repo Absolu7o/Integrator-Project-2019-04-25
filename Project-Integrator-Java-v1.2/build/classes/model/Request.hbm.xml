@@ -1,25 +1,24 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
-<!-- Generated 25/04/2019 00:40:21 by Hibernate Tools 4.3.1 -->
+<!-- Generated 15/05/2019 21:27:18 by Hibernate Tools 4.3.1 -->
 <hibernate-mapping>
     <class name="model.Request" table="request" schema="gcsystem" optimistic-lock="version">
         <id name="code" type="int">
             <column name="code" />
-            <generator class="sequence">
-                <param name="sequence">
-                    gcsystem.request_code_seq
-                </param>
-            </generator>
+            <generator class="assigned" />
         </id>
+        <many-to-one name="company" class="model.Company" fetch="select">
+            <column name="code_company" />
+        </many-to-one>
         <many-to-one name="guestcheck" class="model.Guestcheck" fetch="select">
-            <column name="code_guestcheck" not-null="true" />
+            <column name="code_guestcheck" />
         </many-to-one>
         <many-to-one name="tablelist" class="model.Tablelist" fetch="select">
-            <column name="code_tablelist" not-null="true" />
+            <column name="code_tablelist" />
         </many-to-one>
         <many-to-one name="userlogin" class="model.Userlogin" fetch="select">
-            <column name="code_userlogin" not-null="true" />
+            <column name="code_userlogin" />
         </many-to-one>
         <property name="status" type="string">
             <column name="status" length="20" />
@@ -30,20 +29,17 @@
         <property name="datetimeend" type="timestamp">
             <column name="datetimeend" length="29" />
         </property>
-        <property name="paymoney" type="big_decimal">
-            <column name="paymoney" precision="6" />
-        </property>
-        <property name="paycard" type="big_decimal">
-            <column name="paycard" precision="6" />
-        </property>
-        <property name="cardtype" type="string">
-            <column name="cardtype" length="2" />
-        </property>
-        <set name="requestitems" table="requestitem" inverse="true" lazy="true" fetch="select">
+        <set name="requestproducts" table="requestproduct" inverse="true" lazy="true" fetch="select">
             <key>
-                <column name="code_request" not-null="true" />
+                <column name="code_request" />
             </key>
-            <one-to-many class="model.Requestitem" />
+            <one-to-many class="model.Requestproduct" />
+        </set>
+        <set name="requestpays" table="requestpay" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="code_request" />
+            </key>
+            <one-to-many class="model.Requestpay" />
         </set>
     </class>
 </hibernate-mapping>

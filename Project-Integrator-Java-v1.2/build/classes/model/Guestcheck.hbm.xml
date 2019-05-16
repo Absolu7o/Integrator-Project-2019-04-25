@@ -1,26 +1,22 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
-<!-- Generated 25/04/2019 00:40:21 by Hibernate Tools 4.3.1 -->
+<!-- Generated 15/05/2019 21:27:18 by Hibernate Tools 4.3.1 -->
 <hibernate-mapping>
     <class name="model.Guestcheck" table="guestcheck" schema="gcsystem" optimistic-lock="version">
         <id name="code" type="int">
             <column name="code" />
-            <generator class="sequence">
-                <param name="sequence">
-                    gcsystem.guestcheck_code_seq
-                </param>
-            </generator>
+            <generator class="assigned" />
         </id>
+        <many-to-one name="company" class="model.Company" fetch="select">
+            <column name="code_company" />
+        </many-to-one>
         <property name="barcode" type="string">
-            <column name="barcode" length="10" />
-        </property>
-        <property name="active" type="string">
-            <column name="active" length="3" />
+            <column name="barcode" length="7" />
         </property>
         <set name="requests" table="request" inverse="true" lazy="true" fetch="select">
             <key>
-                <column name="code_guestcheck" not-null="true" />
+                <column name="code_guestcheck" />
             </key>
             <one-to-many class="model.Request" />
         </set>

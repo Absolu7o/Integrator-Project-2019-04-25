@@ -1,5 +1,5 @@
 package model;
-// Generated 12/05/2019 21:50:56 by Hibernate Tools 4.3.1
+// Generated 15/05/2019 21:27:16 by Hibernate Tools 4.3.1
 
 
 import java.math.BigDecimal;
@@ -30,29 +30,30 @@ public class Additional  implements java.io.Serializable {
      private int code;
      private Productcategory productcategory;
      private String description;
-     private float price;
-     private Character active;
+     private BigDecimal price;
      private Date datetimeins;
+     private Set<Comboproductadditional> comboproductadditionals = new HashSet<Comboproductadditional>(0);
      private Set<Requestproductadditional> requestproductadditionals = new HashSet<Requestproductadditional>(0);
-     private Set<Additionalproduct> additionalproducts = new HashSet<Additionalproduct>(0);
+     private Set<Additionalcompany> additionalcompanies = new HashSet<Additionalcompany>(0);
+     private Set<Productadditional> productadditionals = new HashSet<Productadditional>(0);
 
     public Additional() {
-        price=4;
     }
 
 	
     public Additional(int code) {
         this.code = code;
     }
-    public Additional(int code, Productcategory productcategory, String description, float price, Character active, Date datetimeins, Set<Requestproductadditional> requestproductadditionals, Set<Additionalproduct> additionalproducts) {
+    public Additional(int code, Productcategory productcategory, String description, BigDecimal price, Date datetimeins, Set<Comboproductadditional> comboproductadditionals, Set<Requestproductadditional> requestproductadditionals, Set<Additionalcompany> additionalcompanies, Set<Productadditional> productadditionals) {
        this.code = code;
        this.productcategory = productcategory;
        this.description = description;
        this.price = price;
-       this.active = active;
        this.datetimeins = datetimeins;
+       this.comboproductadditionals = comboproductadditionals;
        this.requestproductadditionals = requestproductadditionals;
-       this.additionalproducts = additionalproducts;
+       this.additionalcompanies = additionalcompanies;
+       this.productadditionals = productadditionals;
     }
    
      @Id 
@@ -89,22 +90,12 @@ public class Additional  implements java.io.Serializable {
 
     
     @Column(name="price", precision=12)
-    public float getPrice() {
+    public BigDecimal getPrice() {
         return this.price;
     }
     
-    public void setPrice(float price) {
+    public void setPrice(BigDecimal price) {
         this.price = price;
-    }
-
-    
-    @Column(name="active", length=1)
-    public Character getActive() {
-        return this.active;
-    }
-    
-    public void setActive(Character active) {
-        this.active = active;
     }
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -118,6 +109,15 @@ public class Additional  implements java.io.Serializable {
     }
 
 @OneToMany(fetch=FetchType.LAZY, mappedBy="additional")
+    public Set<Comboproductadditional> getComboproductadditionals() {
+        return this.comboproductadditionals;
+    }
+    
+    public void setComboproductadditionals(Set<Comboproductadditional> comboproductadditionals) {
+        this.comboproductadditionals = comboproductadditionals;
+    }
+
+@OneToMany(fetch=FetchType.LAZY, mappedBy="additional")
     public Set<Requestproductadditional> getRequestproductadditionals() {
         return this.requestproductadditionals;
     }
@@ -127,12 +127,21 @@ public class Additional  implements java.io.Serializable {
     }
 
 @OneToMany(fetch=FetchType.LAZY, mappedBy="additional")
-    public Set<Additionalproduct> getAdditionalproducts() {
-        return this.additionalproducts;
+    public Set<Additionalcompany> getAdditionalcompanies() {
+        return this.additionalcompanies;
     }
     
-    public void setAdditionalproducts(Set<Additionalproduct> additionalproducts) {
-        this.additionalproducts = additionalproducts;
+    public void setAdditionalcompanies(Set<Additionalcompany> additionalcompanies) {
+        this.additionalcompanies = additionalcompanies;
+    }
+
+@OneToMany(fetch=FetchType.LAZY, mappedBy="additional")
+    public Set<Productadditional> getProductadditionals() {
+        return this.productadditionals;
+    }
+    
+    public void setProductadditionals(Set<Productadditional> productadditionals) {
+        this.productadditionals = productadditionals;
     }
 
 
