@@ -1,0 +1,12 @@
+BEGIN;
+
+--Tabelas
+drop table if exists dksystem.itemlog;
+drop table if exists dksystem.itemcompany;
+drop table if exists dksystem.item;
+drop table if exists dksystem.itemcategory;
+
+--Schema
+drop schema if exists dksystem;
+
+COMMIT;

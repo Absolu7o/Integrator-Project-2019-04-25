@@ -1,0 +1,43 @@
+--Schema
+create schema if not exists dksystem;
+
+--Tabelas
+create table if not exists dksystem.itemcategory(
+	code serial not null,
+	description varchar(40),
+	constraint itemcategory_pk1 primary key (code));
+	
+create table if not exists dksystem.item(
+	code serial not null,
+	barcode varchar(9),
+	description varchar(40),
+	measureunit varchar(20),
+	maxstock decimal(12,2),
+	minstock decimal(12,2),
+	datetimeins timestamp,
+	code_itemcategory integer not null,
+	constraint item_pk1 primary key (code),
+	constraint item_fk1 foreign key (code_itemcategory) references dksystem.itemcategory(code));
+	
+	
+create table if not exists dksystem.itemstock(
+	code serial not null,
+	priority char(1),
+	quantity decimal(12,2),
+	active char(1),
+	code_item integer,
+	constraint itemstock_pk1 primary key (code),
+	constraint itemstock_fk1 foreign key (code_item) references dksystem.item(code));
+		
+create table if not exists dksystem.itemlog(
+	code serial not null;
+	datetimeins timestamp,
+	logtype varchar(20),
+	code_userlogin integer,
+	code_company integer,
+	code_item integer,
+	constraint itemlog_pk1 primary key (code),
+	constraint itemlog_fk1 foreign key (code_userlogin) references macrotech.userlogin(code),
+	constraint itemlog_fk2 foreign key (code_company) references macrotech.company(code),
+	constraint itemlog_fk3 foreign key (code_item) references dksystem.item(code));
+

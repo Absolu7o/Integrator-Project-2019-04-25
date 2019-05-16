@@ -1,7 +1,7 @@
 BEGIN;
 
 --Tabelas
-drop table if exists macrotech.multicompany;
+drop table if exists macrotech.usercompany;
 drop table if exists macrotech.userlog;
 drop table if exists macrotech.userpermission;
 drop table if exists macrotech.systemview;

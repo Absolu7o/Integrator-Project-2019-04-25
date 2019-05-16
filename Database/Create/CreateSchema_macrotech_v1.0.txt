@@ -15,7 +15,7 @@ create table if not exists macrotech.company(
 	city varchar(60),
 	uf char(2),
 	zipcode char(8),
-	active char(1),
+	available boolean,
 	constraint company_pk1 primary key (code));
 	
 create table if not exists macrotech.userlogin(
@@ -23,7 +23,7 @@ create table if not exists macrotech.userlogin(
 	name varchar(60),
 	login varchar(20),
 	password varchar(100),
-	active char(1),
+	available boolean,
 	constraint userlogin_pk1 primary key (code));
 
 create table if not exists macrotech.systemview(
@@ -34,9 +34,10 @@ create table if not exists macrotech.systemview(
 	
 create table if not exists macrotech.userpermission(
 	code integer not null,
-	manager char(1),
-	cashier char(1),
-	attendant char(1),
+	manager boolean,
+	cashier boolean,
+	attendant boolean,
+	stocker boolean,
 	constraint userpermission_pk1 primary key (code),
 	constraint userpermission_fk1 foreign key (code) references macrotech.userlogin(code));
 	
@@ -52,22 +53,22 @@ create table if not exists macrotech.userlog(
 	constraint userlog_fk2 foreign key (code_company) references macrotech.company(code),
 	constraint userlog_fk3 foreign key (code_systemview) references macrotech.systemview(code));
 	
-create table if not exists macrotech.multicompany(
+create table if not exists macrotech.usercompany(
 	code serial not null,
 	code_userlogin integer,
 	code_company integer,
-	constraint multicompany_pk1 primary key (code),
-	constraint multicompany_fk1 foreign key (code_userlogin) references macrotech.userlogin(code),
-	constraint multicompany_fk2 foreign key (code_company) references macrotech.company(code));
+	constraint usercompany_pk1 primary key (code),
+	constraint usercompany_fk1 foreign key (code_userlogin) references macrotech.userlogin(code),
+	constraint usercompany_fk2 foreign key (code_company) references macrotech.company(code));
 
 --Index
 create unique index if not exists userlogin_idxu1 on macrotech.userlogin(login);
 
 --Insert
-insert into macrotech.company (code,name,cnpj,address,numberaddress,complement,district,city,uf,zipcode,active) values (nextval('macrotech.company_code_seq'),'Matriz',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'t');
-insert into macrotech.userlogin (code,name,login,password,active) values (nextval('macrotech.userlogin_code_seq'),'Macro Tech','root','root123','t') on conflict (login) do nothing;
-insert into macrotech.multicompany (code,code_userlogin,code_company) values (nextval('macrotech.multicompany_code_seq'),1,1);
-insert into macrotech.userpermission (code,manager,cashier,attendant) values (1,'t','t','t') on conflict (code) do nothing;
+insert into macrotech.company (code,name,cnpj,address,numberaddress,complement,district,city,uf,zipcode,available) values (nextval('macrotech.company_code_seq'),'Matriz',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'t');
+insert into macrotech.userlogin (code,name,login,password,available) values (nextval('macrotech.userlogin_code_seq'),'Macro Tech','root','root123','t') on conflict (login) do nothing;
+insert into macrotech.usercompany (code,code_userlogin,code_company) values (nextval('macrotech.usercompany_code_seq'),1,1);
+insert into macrotech.userpermission (code,manager,cashier,attendant,stocker) values (1,'t','t','t','t') on conflict (code) do nothing;
 
 insert into macrotech.systemview (code,name,classname) values (1,'Caixa','ViewCashRegister') on conflict (code) do nothing;
 insert into macrotech.systemview (code,name,classname) values (2,'Entrega de Pedidos','ViewDeliveryRequest') on conflict (code) do nothing;

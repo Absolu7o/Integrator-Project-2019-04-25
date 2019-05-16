@@ -7,7 +7,6 @@ create schema if not exists gcsystem;
 create table if not exists gcsystem.tablelist(
 	code serial not null,
 	description varchar(10),
-	active char(1),
 	code_company integer,
 	constraint tablelist_pk1 primary key (code),
 	constraint tablelist_fk1 foreign key (code_company) references macrotech.company(code));
@@ -15,7 +14,6 @@ create table if not exists gcsystem.tablelist(
 create table if not exists gcsystem.guestcheck(
 	code serial not null,
 	barcode char(7),
-	active char(1),
 	code_company integer,
 	constraint guestcheck_pk1 primary key (code),
 	constraint guestcheck_fk1 foreign key (code_company) references macrotech.company(code));
@@ -28,25 +26,50 @@ create table if not exists gcsystem.productcategory(
 create table if not exists gcsystem.product(
 	code serial not null,
 	barcode char(9),
+	productseq integer,
 	description varchar(40),
 	price decimal(12,2),
 	preparation varchar(20),
-	additional char(3),
-	active char(1),
+	additional boolean,
 	datetimeins timestamp,
 	code_productcategory integer,
 	constraint product_pk1 primary key (code),
 	constraint product_fk1 foreign key (code_productcategory) references gcsystem.productcategory(code));
 	
+create table if not exists gcsystem.productcompany(
+	code serial not null,
+	available boolean,
+	code_product integer,
+	code_company integer,
+	constraint productcompany_pk1 primary key (code),
+	constraint productcompany_fk1 foreign key (code_product) references gcsystem.product(code),
+	constraint productcompany_fk2 foreign key (code_company) references macrotech.company(code));
+	
 create table if not exists gcsystem.additional(
 	code serial not null,
 	description varchar(40),
 	price decimal(12,2),
-	active char(1),
 	datetimeins timestamp,
 	code_productcategory integer,
 	constraint additional_pk1 primary key (code),
 	constraint additional_fk1 foreign key (code_productcategory) references gcsystem.productcategory(code));
+	
+create table if not exists gcsystem.additionalcompany(
+	code serial not null,
+	available boolean,
+	code_additional integer,
+	code_company integer,
+	constraint additionalcompany_pk1 primary key (code),
+	constraint additionalcompany_fk1 foreign key (code_additional) references gcsystem.additional(code),
+	constraint additionalcompany_fk2 foreign key (code_company) references macrotech.company(code));
+
+create table if not exists gcsystem.productadditional(
+	code serial not null,
+	code_additional integer,
+	code_product integer,
+	constraint productadditional_pk1 primary key (code),
+	constraint productadditional_fk1 foreign key (code_additional) references gcsystem.additional(code),
+	constraint productadditional_fk2 foreign key (code_product) references gcsystem.product(code));	
 	
 create table if not exists gcsystem.request(
 	code serial not null,
@@ -78,7 +101,7 @@ create table if not exists gcsystem.requestproduct(
 	status varchar(20),
 	countproduct integer,
 	note varchar(150),
-	requeststart char(1),
+	requeststart boolean,
 	datetimeins timestamp,
 	datetimeupd timestamp,
 	code_request integer,
@@ -112,19 +135,19 @@ create table if not exists gcsystem.comboproduct(
 	constraint comboproduct_fk1 foreign key (code_product) references gcsystem.product(code),
 	constraint comboproduct_fk2 foreign key (code_comboproduct) references gcsystem.product(code));
 	
-create table if not exists gcsystem.additionalproduct(
+create table if not exists gcsystem.comboproductadditional(
 	code serial not null,
 	code_additional integer,
-	code_product integer,
-	constraint additionalproduct_pk1 primary key (code),
-	constraint additionalproduct_fk1 foreign key (code_additional) references gcsystem.additional(code),
-	constraint additionalproduct_fk2 foreign key (code_product) references gcsystem.product(code));	
-
+	code_comboproduct integer,
+	constraint comboproductadditional_pk1 primary key (code),
+	constraint comboproductadditional_fk1 foreign key (code_additional) references gcsystem.additional(code),
+	constraint comboproductadditional_fk2 foreign key (code_comboproduct) references gcsystem.comboproduct(code));	
+	
 --Index
 create unique index if not exists tablelist_idxu1 on gcsystem.tablelist(description);
 create unique index if not exists guestcheck_idxu1 on gcsystem.guestcheck(barcode);
 create unique index if not exists requestproductadditional_idxu1 on gcsystem.requestproductadditional(code_requestproduct,code_additional);
-create index if not exists product_idx1 on gcsystem.product(barcode);
+create unique index if not exists product_idxu1 on gcsystem.product(barcode,productseq);
 
 --Insert
 insert into gcsystem.productcategory (code,description) values (nextval('gcsystem.productcategory_code_seq'),'COMBOS') on conflict (code) do nothing;
