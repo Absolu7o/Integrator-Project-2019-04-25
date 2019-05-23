@@ -12,7 +12,7 @@ public class ViewDeliveryRequest extends ViewMaster implements ActionListener {
     private void createAndShowView() {
 
         //Code 2
-        setFrameAndPane("Entrega de Pedidos", 10, 10);
+        setFrameAndPane("Entrega de Pedidos", 10, 10, 30, 60);
 
         addComponentDefaultPane();
         setComponentActionEvent();

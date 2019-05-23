@@ -8,11 +8,11 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
-public class ViewRegisterCategory extends ViewMaster implements ActionListener {
+public class ViewRegisterProductCategory extends ViewMaster implements ActionListener {
 
     JLabel labelTitle = new JLabel("Cadastro de Categorias");
     JLabel labelCode = new JLabel("C�digo");
-    JLabel labelDescription = new JLabel("Descri��o");
+    JLabel labelDescription = new JLabel("Descrição");
 
     JButton buttonInsert = new JButton("+");
     JButton buttonDelete = new JButton("-");
@@ -23,14 +23,14 @@ public class ViewRegisterCategory extends ViewMaster implements ActionListener {
     JTextField fieldCode = new JTextField();
     JTextField fieldDescription = new JTextField();
 
-    public ViewRegisterCategory() {
+    public ViewRegisterProductCategory() {
         createAndShowView();
     }
 
     private void createAndShowView() {
 
         //Code 7
-        setFrameAndPane("Cadastro de Categorias", 10, 10);
+        setFrameAndPane("Cadastro de Categorias", 10, 10, 30, 60);
 
         addComponentDefaultPane();
         setComponentActionEvent();

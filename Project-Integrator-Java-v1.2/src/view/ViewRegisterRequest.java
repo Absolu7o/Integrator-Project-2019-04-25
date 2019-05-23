@@ -12,7 +12,7 @@ public class ViewRegisterRequest extends ViewMaster implements ActionListener {
     private void createAndShowView() {
 
         //Code 11
-        setFrameAndPane("Realização de Pedidos", 10, 10);
+        setFrameAndPane("Realização de Pedidos", 10, 10, 30, 60);
 
         addComponentDefaultPane();
         setComponentActionEvent();

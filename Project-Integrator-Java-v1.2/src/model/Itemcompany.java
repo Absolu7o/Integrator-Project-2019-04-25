@@ -1,5 +1,5 @@
 package model;
-// Generated 15/05/2019 21:27:16 by Hibernate Tools 4.3.1
+// Generated 19/05/2019 14:54:07 by Hibernate Tools 4.3.1
 
 
 import java.math.BigDecimal;
@@ -16,7 +16,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name="itemcompany"
-    ,schema="gcsystem"
+    ,schema="dksystem"
 )
 public class Itemcompany  implements java.io.Serializable {
 
@@ -51,7 +51,7 @@ public class Itemcompany  implements java.io.Serializable {
      @Id 
 
     
-    @Column(name="code", unique=true, nullable=false)
+    @Column(name="code", nullable=false)
     public int getCode() {
         return this.code;
     }

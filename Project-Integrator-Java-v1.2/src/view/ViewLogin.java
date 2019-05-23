@@ -8,11 +8,13 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 
 import controller.ControllerLogin;
+import javax.swing.ImageIcon;
 import javax.swing.JPasswordField;
 
 public class ViewLogin extends ViewMaster implements ActionListener {
 
     ControllerLogin controllerLogin = new ControllerLogin();
+       
     JButton buttonLogin = new JButton("Login");
     JLabel labelLogin = new JLabel("Login");
     JLabel labelPassword = new JLabel("Senha");
@@ -26,8 +28,8 @@ public class ViewLogin extends ViewMaster implements ActionListener {
     private void createAndShowGUI() {
 
         //Code 3
-        setFrameAndPane("Login", 3, 3);
-
+        setFrameAndPane("Login", 3, 3, 30, 60);
+        
         addComponentDefaultPane();
         setComponentActionEvent();
 
@@ -45,7 +47,7 @@ public class ViewLogin extends ViewMaster implements ActionListener {
         fieldLogin = setDefaultField(fieldLogin, 0, 1, 1, 2, "HORIZONTAL");
         fieldPassword = setDefaultPasswordField(fieldPassword, 1, 1, 1, 2, "HORIZONTAL");
 
-        //Botões
+        //Bot�es
         buttonLogin = setDefaultButton(buttonLogin, 2, 0, 1, 3, "BOTH");
 
     }

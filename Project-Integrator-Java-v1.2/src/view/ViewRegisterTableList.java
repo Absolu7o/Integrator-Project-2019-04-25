@@ -1,17 +1,21 @@
 package view;
 
+import java.awt.GridBagConstraints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.security.cert.PKIXRevocationChecker.Option;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 public class ViewRegisterTableList extends ViewMaster implements ActionListener {
 
     JLabel labelTitle = new JLabel("Cadastro de Mesas");
-    JLabel labelCode = new JLabel("Código");
+    JLabel labelCode = new JLabel("C�digo");
     JLabel labelDescription = new JLabel("Descrição");
     JLabel labelActive = new JLabel("Ativo?");
 
@@ -40,7 +44,7 @@ public class ViewRegisterTableList extends ViewMaster implements ActionListener 
     private void createAndShowView() {
 
         //Code 12
-        setFrameAndPane("Cadastro de Mesas", 10, 10);
+        setFrameAndPane("Cadastro de Mesas", 10, 10, 30, 60);
 
         addComponentDefaultPane();
         setComponentActionEvent();

@@ -1,5 +1,5 @@
 package model;
-// Generated 15/05/2019 21:27:16 by Hibernate Tools 4.3.1
+// Generated 19/05/2019 14:54:07 by Hibernate Tools 4.3.1
 
 
 import javax.persistence.Column;
@@ -18,7 +18,7 @@ import org.hibernate.annotations.Parameter;
  */
 @Entity
 @Table(name="userpermission"
-    ,schema="gcsystem"
+    ,schema="macrotech"
 )
 public class Userpermission  implements java.io.Serializable {
 
@@ -48,7 +48,7 @@ public class Userpermission  implements java.io.Serializable {
      @GenericGenerator(name="generator", strategy="foreign", parameters=@Parameter(name="property", value="userlogin"))@Id @GeneratedValue(generator="generator")
 
     
-    @Column(name="code", unique=true, nullable=false)
+    @Column(name="code", nullable=false)
     public int getCode() {
         return this.code;
     }

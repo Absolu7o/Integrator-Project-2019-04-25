@@ -3,16 +3,16 @@ package view;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class ViewRegisterItem extends ViewMaster implements ActionListener {
+public class ViewRegisterProduct extends ViewMaster implements ActionListener {
 
-    public ViewRegisterItem() {
+    public ViewRegisterProduct() {
         createAndShowView();
     }
 
     private void createAndShowView() {
 
         //Code 10
-        setFrameAndPane("Cadastro de Itens", 10, 10);
+        setFrameAndPane("Cadastro de Itens", 10, 10, 30, 60);
 
         addComponentDefaultPane();
         setComponentActionEvent();

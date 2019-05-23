@@ -12,7 +12,7 @@ public class ViewCashRegister extends ViewMaster implements ActionListener {
     private void createAndShowView() {
 
         //Code 1
-        setFrameAndPane("Caixa", 10, 10);
+        setFrameAndPane("Caixa", 10, 10, 30, 60);
 
         addComponentDefaultPane();
         setComponentActionEvent();

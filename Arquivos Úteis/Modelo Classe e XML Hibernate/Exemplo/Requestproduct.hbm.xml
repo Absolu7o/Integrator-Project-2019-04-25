@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 13/05/2019 02:38:28 by Hibernate Tools 4.3.1 -->
+<hibernate-mapping>
+    <class name="model.Requestproduct" table="requestproduct" schema="gcsystem" optimistic-lock="version">
+        <id name="code" type="int">
+            <column name="code" />
+            <generator class="foreign">
+                <param name="property">teste</param>
+            </generator>
+        </id>
+        <many-to-one name="product" class="model.Product" fetch="select">
+            <column name="code_product" />
+        </many-to-one>
+        <one-to-one name="teste" class="model.Teste" constrained="true"></one-to-one>
+        <property name="status" type="string">
+            <column name="status" length="20" />
+        </property>
+        <property name="countproduct" type="java.lang.Integer">
+            <column name="countproduct" />
+        </property>
+        <property name="note" type="string">
+            <column name="note" length="150" />
+        </property>
+        <property name="requeststart" type="java.lang.Character">
+            <column name="requeststart" length="1" />
+        </property>
+        <property name="datetimeins" type="timestamp">
+            <column name="datetimeins" length="29" />
+        </property>
+        <property name="datetimeupd" type="timestamp">
+            <column name="datetimeupd" length="29" />
+        </property>
+    </class>
+</hibernate-mapping>

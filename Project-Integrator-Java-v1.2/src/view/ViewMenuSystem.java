@@ -11,13 +11,14 @@ import javax.swing.JMenuItem;
 import javax.swing.JRadioButtonMenuItem;
 
 import controller.ControllerMenuSystem;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import net.sf.jasperreports.engine.JRException;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import model.Userpermission;
 
 public class ViewMenuSystem extends ViewMaster implements ActionListener {
 
     ControllerMenuSystem controllerMenuSystem = new ControllerMenuSystem();
+    Userpermission userpermission;
 
     JMenuBar menubar = new JMenuBar();
     JMenu optionMenu = new JMenu("Opções");
@@ -38,30 +39,42 @@ public class ViewMenuSystem extends ViewMaster implements ActionListener {
     JRadioButtonMenuItem colorOrange = new JRadioButtonMenuItem("Laranja");
     JRadioButtonMenuItem colorRed = new JRadioButtonMenuItem("Vermelho");
 
-    JButton buttonRegisterGuestCheck = new JButton("Cadastro de Comandas");
-    JButton buttonReportUserLogAnalitc = new JButton("Relatório Análitico de Log");
-    JButton buttonReportUserLogSynthetic = new JButton("Relatório Sintético de Log");
+    ImageIcon exeIcon = new ImageIcon(getClass().getResource("/icon/exeIcon.png"));
+
+    JLabel labelManager = new JLabel("Gerenciamento");
+    JLabel labelAttendant = new JLabel("Atendimento");
+    JLabel labelCashier = new JLabel("Caixa");
+
+    JButton buttonRegisterGuestCheck = new JButton("Cadastro de Comandas", exeIcon);
+    JButton buttonRegisterComboProduct = new JButton("Cadastro de Combos", exeIcon);
+    JButton buttonRegisterTableList = new JButton("Cadastro de Mesas", exeIcon);
+    JButton buttonRegisterProductCategory = new JButton("<html>Cadastro de Categorias<br />e Adicionais</html>", exeIcon);
+    JButton buttonRegisterProduct = new JButton("Cadastro de Produtos", exeIcon);
+    JButton buttonReportUserLog = new JButton("Relatórios de Usuário", exeIcon);
+    JButton buttonCashRegister = new JButton("Caixa", exeIcon);
+    JButton buttonRequest = new JButton("Pedidos", exeIcon);
+    JButton buttonDeliveryRequest = new JButton("Entrega de Pedidos", exeIcon);
+    JButton buttonPreparationRequest = new JButton("Preaparação de Pedidos", exeIcon);
+
+    JButton buttonProgram3 = new JButton();
 
     public ViewMenuSystem() {
         //Melhorar: quando este método for chamado, apenas deixar painel do Menu visível
         //Trabalhar com diversos paines, um painel será criado quando pârametro for passado
-        createAndShowGUI(null, null);
+        createAndShowGUI();
     }
 
-    public ViewMenuSystem(Character cashier, Character attendant) {
-        createAndShowGUI(cashier, attendant);
+    public ViewMenuSystem(Userpermission userpermission) {
+        this.userpermission = userpermission;
+        createAndShowGUI();
     }
 
-    private void createAndShowGUI(Character cashier, Character attendant) {
+    private void createAndShowGUI() {
 
         //Code 4
-        setFrameAndPane("Menu Principal", 6, 5);
-        if ((cashier != null) && (attendant != null)) {
-            //Carrega MenuBar
-            tempMenubarItem();  //Método Temporario
-            //addMenubarItem(); //Melhorar Método
-        }
+        setFrameAndPane("Menu Principal", 15, 20, 30, 60);
 
+        addMenubarItem();
         addComponentDefaultPane();
         setComponentActionEvent();
 
@@ -71,21 +84,49 @@ public class ViewMenuSystem extends ViewMaster implements ActionListener {
     }
 
     public void addComponentDefaultPane() {
+        int counLine = 0;
 
-        buttonRegisterGuestCheck = setDefaultButton(buttonRegisterGuestCheck, 0, 0, 2, 5, "BOTH");
-        buttonReportUserLogAnalitc = setDefaultButton(buttonReportUserLogAnalitc, 2, 0, 2, 5, "BOTH");
-        buttonReportUserLogSynthetic = setDefaultButton(buttonReportUserLogSynthetic, 4, 0, 2, 5, "BOTH");
+        if (userpermission.getManager()) {
 
-    }
+            labelManager = setDefaultLabel(labelManager, counLine, 0, 1, 20, "HORIZONTAL");
+            counLine++;
 
-    private void tempMenubarItem() {
+            buttonRegisterGuestCheck = setDefaultButton(buttonRegisterGuestCheck, counLine, 0, 2, 6, "BOTH");
+            buttonRegisterTableList = setDefaultButton(buttonRegisterTableList, counLine, 6, 2, 6, "BOTH");
+            buttonRegisterProductCategory = setDefaultButton(buttonRegisterProductCategory, counLine, 12, 2, 6, "BOTH");
 
-        frame.setJMenuBar(menubar);
-        menubar.setOpaque(false);
-        //Menu Principal
-        menubar.add(menuSystemOption);
-        //Logout
-        menubar.add(logoutMenu);
+            counLine = counLine + 2;
+
+            buttonRegisterProduct = setDefaultButton(buttonRegisterProduct, counLine, 0, 2, 6, "BOTH");
+            buttonRegisterComboProduct = setDefaultButton(buttonRegisterComboProduct, counLine, 6, 2, 6, "BOTH");
+            buttonReportUserLog = setDefaultButton(buttonReportUserLog, counLine, 12, 2, 6, "BOTH");
+
+            counLine = counLine + 3;
+        }
+
+        if (userpermission.getAttendant()) {
+
+            labelAttendant = setDefaultLabel(labelAttendant, counLine, 0, 1, 20, "HORIZONTAL");
+            counLine++;
+
+            buttonRequest = setDefaultButton(buttonRequest, counLine, 0, 2, 6, "BOTH");
+            buttonPreparationRequest = setDefaultButton(buttonPreparationRequest, counLine, 6, 2, 6, "BOTH");
+            buttonDeliveryRequest = setDefaultButton(buttonDeliveryRequest, counLine, 12, 2, 6, "BOTH");
+
+            counLine = counLine + 3;
+        }
+
+        if (userpermission.getCashier()) {
+
+            labelCashier = setDefaultLabel(labelCashier, counLine, 0, 1, 20, "HORIZONTAL");
+            counLine++;
+
+            buttonCashRegister = setDefaultButton(buttonCashRegister, counLine, 0, 2, 6, "BOTH");
+            counLine = counLine + 2;
+        }
+        if (userpermission.getStocker()) {
+
+        }
 
     }
 
@@ -126,8 +167,15 @@ public class ViewMenuSystem extends ViewMaster implements ActionListener {
     private void setComponentActionEvent() {
 
         buttonRegisterGuestCheck.addActionListener(this);
-        buttonReportUserLogAnalitc.addActionListener(this);
-        buttonReportUserLogSynthetic.addActionListener(this);
+        buttonRegisterTableList.addActionListener(this);
+        buttonRegisterProductCategory.addActionListener(this);
+        buttonRegisterProduct.addActionListener(this);
+        buttonRegisterComboProduct.addActionListener(this);
+        buttonReportUserLog.addActionListener(this);
+        buttonRequest.addActionListener(this);
+        buttonPreparationRequest.addActionListener(this);
+        buttonDeliveryRequest.addActionListener(this);
+        buttonCashRegister.addActionListener(this);
 
         menuSystemOption.addActionListener(this);
         logoutMenu.addActionListener(this);
@@ -139,18 +187,8 @@ public class ViewMenuSystem extends ViewMaster implements ActionListener {
 
         if (e.getSource() == buttonRegisterGuestCheck) {
             controllerMenuSystem.callRegisterGuestCheck();
-        } else if (e.getSource() == buttonReportUserLogAnalitc) {
-            try {
-                controllerMenuSystem.callReport("UserLogAnalitc");
-            } catch (JRException ex) {
-                Logger.getLogger(ViewMenuSystem.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        } else if (e.getSource() == buttonReportUserLogSynthetic) {
-            try {
-                controllerMenuSystem.callReport("UserLogSynthetic");
-            } catch (JRException ex) {
-                Logger.getLogger(ViewMenuSystem.class.getName()).log(Level.SEVERE, null, ex);
-            }
+        } else if (e.getSource() == buttonReportUserLog) {
+            //Montar Relatório
         } else if (e.getSource() == menuSystemOption) {
             controllerMenuSystem.callMenuSystem();
         } else if (e.getSource() == logoutMenu) {

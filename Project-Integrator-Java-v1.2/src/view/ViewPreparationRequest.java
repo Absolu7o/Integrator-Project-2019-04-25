@@ -12,7 +12,7 @@ public class ViewPreparationRequest extends ViewMaster implements ActionListener
     private void createAndShowView() {
 
         //Code 5
-        setFrameAndPane("Preparação de Pedidos", 10, 10);
+        setFrameAndPane("Preparação de Pedidos", 10, 10, 30, 60);
 
         addComponentDefaultPane();
         setComponentActionEvent();

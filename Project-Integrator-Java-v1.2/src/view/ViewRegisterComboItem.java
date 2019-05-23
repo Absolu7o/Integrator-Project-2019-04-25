@@ -12,7 +12,7 @@ public class ViewRegisterComboItem extends ViewMaster implements ActionListener 
     private void createAndShowView() {
 
         //Code 8
-        setFrameAndPane("Cadastro de Combos", 10, 10);
+        setFrameAndPane("Cadastro de Combos", 10, 10, 30, 60);
 
         addComponentDefaultPane();
         setComponentActionEvent();
