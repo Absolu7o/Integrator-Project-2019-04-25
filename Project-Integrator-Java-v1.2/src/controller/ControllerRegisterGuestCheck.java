@@ -62,7 +62,7 @@ public class ControllerRegisterGuestCheck extends ControllerMain {
                 System.out.println(guestCk.getBarcode());
             });
             db.getTransaction().commit();
-
+        
         } catch (HibernateException hbm) {
             db.getTransaction().rollback();
         }

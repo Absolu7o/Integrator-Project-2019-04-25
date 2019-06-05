@@ -43,7 +43,7 @@ public class Productcategory  implements java.io.Serializable {
     }
    
      @Id 
-
+    
     
     @Column(name="code", nullable=false)
     public int getCode() {

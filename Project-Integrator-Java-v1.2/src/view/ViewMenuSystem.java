@@ -40,7 +40,7 @@ public class ViewMenuSystem extends ViewMaster implements ActionListener {
     JRadioButtonMenuItem colorRed = new JRadioButtonMenuItem("Vermelho");
 
     ImageIcon exeIcon = new ImageIcon(getClass().getResource("/icon/exeIcon.png"));
-
+    
     JLabel labelManager = new JLabel("Gerenciamento");
     JLabel labelAttendant = new JLabel("Atendimento");
     JLabel labelCashier = new JLabel("Caixa");
@@ -189,6 +189,8 @@ public class ViewMenuSystem extends ViewMaster implements ActionListener {
             controllerMenuSystem.callRegisterGuestCheck();
         } else if (e.getSource() == buttonReportUserLog) {
             //Montar Relatório
+        } else if (e.getSource() == buttonCashRegister) {
+            new ViewCashRegister();
         } else if (e.getSource() == menuSystemOption) {
             controllerMenuSystem.callMenuSystem();
         } else if (e.getSource() == logoutMenu) {

@@ -67,7 +67,7 @@ public class Product  implements java.io.Serializable {
     }
    
      @Id 
-
+     
     
     @Column(name="code", nullable=false)
     public int getCode() {

@@ -1,6 +1,6 @@
 package view;
 
-import components.MyTableModel;
+import components.TableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JButton;
@@ -10,18 +10,20 @@ import javax.swing.JTextField;
 
 import controller.ControllerRegisterGuestCheck;
 import java.util.List;
-import javax.swing.ListSelectionModel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.table.AbstractTableModel;
 import model.Company;
 import model.Guestcheck;
+import components.TableModel;
+import javax.swing.ImageIcon;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.table.JTableHeader;
 
-public class ViewRegisterGuestCheck extends ViewMaster implements ActionListener, ListSelectionListener {
+public class ViewRegisterGuestCheck extends ViewMaster implements ActionListener {
 
     ControllerRegisterGuestCheck controllerGuestCk = new ControllerRegisterGuestCheck();
     Guestcheck guestCheck = new Guestcheck();
-
+    
+    ImageIcon searchIcon = new ImageIcon(getClass().getResource("/icon/searchIcon.png"));
+    
     JLabel labelTitle = new JLabel("Cadastro de Comandas");
     JLabel labelCode = new JLabel("Código");
     JLabel labelBarcode = new JLabel("Cód. de Barras");
@@ -35,19 +37,19 @@ public class ViewRegisterGuestCheck extends ViewMaster implements ActionListener
     JButton buttonCancel = new JButton("Cancelar");
     JButton buttonDelete = new JButton("Excluir");
     JButton buttonEdit = new JButton("Alterar");
-    JButton buttonSearch = new JButton("Q");
-
+    JButton buttonSearch = new JButton(searchIcon);
+    
     JTextField fieldCode = new JTextField();
     JTextField fieldBarcode = new JTextField();
 
     JTextField fieldNewCode = new JTextField();
     JTextField fieldNewBarcode = new JTextField();
 
-    String[] columnNames = {"", "Código", "Cód. Barras"};
-    Object[][] data = new Object[10][3];
-    //DefaultTableModel tableModel = new DefaultTableModel(null, header);
     JTable table = new JTable();
-    ListSelectionModel select = table.getSelectionModel();
+    String[] columns = {"", "Código", "Cód. Barras"};
+    Object[][] rows;
+
+    int count = 0;
 
     public ViewRegisterGuestCheck() {
         createAndShowGUI();
@@ -56,7 +58,9 @@ public class ViewRegisterGuestCheck extends ViewMaster implements ActionListener
     private void createAndShowGUI() {
 
         //Code 9
-        setFrameAndPane("Cadastro de Comandas", 10, 12, 30, 60);
+        searchIcon.setDescription("BUSCAR");
+    
+        setFrameAndPane("Cadastro de Comandas", 10,10, 20, 64);
 
         addComponentDefaultPane();
         setComponentActionEvent();
@@ -67,23 +71,22 @@ public class ViewRegisterGuestCheck extends ViewMaster implements ActionListener
 
     private void addComponentDefaultPane() {
 
-        //Label
-        labelTitle = setDefaultLabel(labelTitle, 0, 0, 1, 10, "HORIZONTAL");
-        labelCode = setDefaultLabel(labelCode, 2, 0, 1, 1, "HORIZONTAL");
-        labelBarcode = setDefaultLabel(labelBarcode, 2, 2, 1, 2, "HORIZONTAL");
+        //Linha 0
+        labelCode = setDefaultLabel(labelCode, 0, 0, 1, 1, "HORIZONTAL");
+        fieldCode = setDefaultField(fieldCode, 0, 1, 1, 2, "HORIZONTAL");
+        buttonInsert = setDefaultButton(buttonInsert, 0, 6, 1, 1, "BOTH");
 
-        //TextField
-        fieldCode = setDefaultField(fieldCode, 2, 1, 1, 1, "HORIZONTAL");
-        fieldBarcode = setDefaultField(fieldBarcode, 2, 4, 1, 1, "HORIZONTAL");
-
-        //Botões
-        buttonInsert = setDefaultButton(buttonInsert, 1, 0, 1, 3, "BOTH");
-        buttonDelete = setDefaultButton(buttonDelete, 1, 3, 1, 3, "BOTH");
-        buttonEdit = setDefaultButton(buttonEdit, 1, 6, 1, 3, "BOTH");
-        buttonSearch = setDefaultButton(buttonSearch, 2, 7, 1, 1, "BOTH");
-
-        //Table
-        table = setDefaultTableList(table, 3, 0, 6, 8, "BOTH");
+        //Linha 1
+        labelBarcode = setDefaultLabel(labelBarcode, 1, 0, 1, 2, "HORIZONTAL");
+        fieldBarcode = setDefaultField(fieldBarcode, 1, 2, 1, 3, "HORIZONTAL");
+        buttonSearch = setDefaultButton(buttonSearch, 1, 5, 1, 1, "BOTH");
+        buttonDelete = setDefaultButton(buttonDelete, 1, 6, 1, 1, "BOTH");
+        
+        //Linha 2
+        table = setDefaultTableList(table, 2, 0, 8, 7, "BOTH");
+        
+        //buttonEdit = setDefaultButton(buttonEdit, 10, 0, 1, 3, "BOTH");
+        
 
     }
 
@@ -94,7 +97,26 @@ public class ViewRegisterGuestCheck extends ViewMaster implements ActionListener
         buttonEdit.addActionListener(this);
         buttonSearch.addActionListener(this);
 
-        select.addListSelectionListener(this);
+        //select.addListSelectionListener(this);
+    }
+
+    private void loadTable() {
+
+        List<Guestcheck> guestchecks;
+
+        guestchecks = controllerGuestCk.listAllGuestCheck();
+        rows = new Object[guestchecks.size()][columns.length];
+        count = 0;
+
+        guestchecks.forEach((guestcheck) -> {
+            rows[count][0] = new Boolean(false);
+            rows[count][1] = guestcheck.getCode();
+            rows[count][2] = guestcheck.getBarcode();
+            count = count + 1;
+        });
+
+        table.setModel(new TableModel(columns, rows, false));
+
     }
 
     @Override
@@ -117,21 +139,6 @@ public class ViewRegisterGuestCheck extends ViewMaster implements ActionListener
         } else if (e.getSource() == buttonCancel) {
             closeNewFrame();
         }
-    }
-
-    @Override
-    public void valueChanged(ListSelectionEvent e) {
-        int code = 0;
-        String Data = "";
-        int[] row = table.getSelectedRows();
-        int[] column = table.getSelectedColumns();
-        for (int i = 0; i < row.length; i++) {
-            for (int j = 0; j < column.length; j++) {
-                Data = (String) "" + table.getValueAt(row[i], column[j]);
-                code = (int) table.getValueAt(row[i], table.getColumn("Código").getModelIndex());
-            }
-        }
-        System.out.println("Code: " + code + "\tSelect > " + Data);
     }
 
     private void addFrameInsert() {
@@ -173,108 +180,12 @@ public class ViewRegisterGuestCheck extends ViewMaster implements ActionListener
     }
 
     private void insertGuestCheck() {
-        controllerGuestCk.insertGuestCheck(new Guestcheck(0, new Company(1), fieldBarcode.getText(), null));
+        controllerGuestCk.insertGuestCheck(new Guestcheck(0, new Company(1), fieldNewBarcode.getText(), null));
         closeNewFrame();
     }
 
     private void updateGuestCheck() {
         controllerGuestCk.updateGuestCheck(guestCheck);
-    }
-
-    private void loadTable() {
-        List<Guestcheck> guestchecks = controllerGuestCk.listAllGuestCheck();
-        guestchecks.forEach((guestcheck) -> {
-            data[guestcheck.getCode()][0] = new Boolean(false);
-            data[guestcheck.getCode()][1] = guestcheck.getCode();
-            data[guestcheck.getCode()][2] = guestcheck.getBarcode();
-        });
-        System.out.println("1");
-        table.setModel(new MyTableModel(columnNames, data));
-        System.out.println("2");
-
-    }
-
-    class MyTableModel extends AbstractTableModel {
-
-        private String[] columnNames;
-        private Object[][] data;
-
-        public MyTableModel(String[] columnNames,Object[][] data) {
-            this.columnNames=columnNames;
-            this.data=data;
-        }
-        
-        public int getColumnCount() {
-            return columnNames.length;
-        }
-
-        public int getRowCount() {
-            return data.length;
-        }
-
-        public String getColumnName(int col) {
-            return columnNames[col];
-        }
-
-        public Object getValueAt(int row, int col) {
-            return data[row][col];
-        }
-
-        /*
-         * JTable uses this method to determine the default renderer/
-         * editor for each cell.  If we didn't implement this method,
-         * then the last column would contain text ("true"/"false"),
-         * rather than a check box.
-         */
-        public Class getColumnClass(int c) {
-            return getValueAt(0, c).getClass();
-        }
-
-        /*
-         * Don't need to implement this method unless your table's
-         * editable.
-         */
-        public boolean isCellEditable(int row, int col) {
-            //Note that the data/cell address is constant,
-            //no matter where the cell appears onscreen.
-            if (col < 2) {
-                return false;
-            } else {
-                return true;
-            }
-        }
-
-        /*
-         * Don't need to implement this method unless your table's
-         * data can change.
-         */
-        public void setValueAt(Object value, int row, int col) {
-            System.out.println("Setting value at " + row + "," + col
-                    + " to " + value
-                    + " (an instance of "
-                    + value.getClass() + ")");
-
-            data[row][col] = value;
-            fireTableCellUpdated(row, col);
-
-            System.out.println("New value of data:");
-            printDebugData();
-
-        }
-
-        private void printDebugData() {
-            int numRows = getRowCount();
-            int numCols = getColumnCount();
-
-            for (int i = 0; i < numRows; i++) {
-                System.out.print("    row " + i + ":");
-                for (int j = 0; j < numCols; j++) {
-                    System.out.print("  " + data[i][j]);
-                }
-                System.out.println();
-            }
-            System.out.println("--------------------------");
-        }
     }
 
 }

@@ -6,7 +6,11 @@
     <class name="model.Guestcheck" table="guestcheck" schema="gcsystem" optimistic-lock="version">
         <id name="code" type="int">
             <column name="code" />
-            <generator class="assigned" />
+            <generator class="sequence">
+                <param name="sequence">
+                    gcsystem.guestcheck_code_seq
+                </param>
+            </generator>
         </id>
         <many-to-one name="company" class="model.Company" fetch="select">
             <column name="code_company" />

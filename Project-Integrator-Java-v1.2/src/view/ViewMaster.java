@@ -1,29 +1,25 @@
 package view;
 
 import java.awt.Color;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.Point;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.awt.event.WindowStateListener;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 
-public abstract class ViewMaster{
+public abstract class ViewMaster {
 
     static GridBagLayout grid = new GridBagLayout();
     static GridBagConstraints c = new GridBagConstraints();
@@ -40,7 +36,7 @@ public abstract class ViewMaster{
 
     static Color colorDefaultWhite = Color.decode("#FFFFFF"); // Branco
     static Color colorDefaultBlack = Color.decode("#000000"); // Preto
-    static Color colorDefaultBlue = Color.decode("#0030FF"); // Azul
+    static Color colorDefaultBlue = Color.decode("#f9700e"); // DESTAQUE!
     static Color colorDefaultBackground = Color.decode("#F4F4F4"); // Branco Cinzento //#D4D4D4
 
     public static void setConstraints() {
@@ -94,13 +90,13 @@ public abstract class ViewMaster{
 //            }
 //        });
         frame.setExtendedState(frame.MAXIMIZED_BOTH);
-        //frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.add(pane);
 
     }
 
     public static void closeApp() {
-        //Erro no sistema, FECHA Aplicação
+        //Erro no sistema, FECHA Aplicação ?
         pane.setVisible(false);
         pane.removeAll();
         pane.add(new JLabel("<html>[x_x]<br />ERRO 404</html>"));
@@ -113,8 +109,7 @@ public abstract class ViewMaster{
         pane.removeAll();
 
         setGridLayout(counRow, countColumn, lenghtRow, lenghtColumn);
-
-        //Definir um grid Padr�o??
+        
         pane.setLayout(grid);
         pane.setBackground(colorDefaultBackground);
 
@@ -138,7 +133,7 @@ public abstract class ViewMaster{
         newFrame.setResizable(false);
         newFrame.setLocation((frame.getHeight() / 2), (frame.getWidth() / 5));
         newFrame.setVisible(true);
-
+        
         frame.setEnabled(false);
 
     }
@@ -146,13 +141,16 @@ public abstract class ViewMaster{
     public void closeNewFrame() {
         newPane.setVisible(false);
         newPane.removeAll();
-        
+
         newFrame.setVisible(false);
         newFrame.removeAll();
-        
+
         frame.setEnabled(true);
-        //Porque 'frame' é minimizado?
-        frame.show();
+        
+        //ERRADO temporário > Por que 'frame' é minimizado?
+        frame.setAlwaysOnTop(true);
+        frame.setAlwaysOnTop(false);
+        
     }
 
     public void setGridLayout(int counRow, int countColumn, int lenghtRow, int lenghtColumn) {
@@ -174,7 +172,7 @@ public abstract class ViewMaster{
         button.setFont(fontButton);
         button.setPreferredSize(sizeDefault);
         button.setBackground(colorDefaultBlue);
-        button.setForeground(colorDefaultWhite);
+        button.setForeground(colorDefaultBlack);
         button.setFocusable(false);
 
         pane.add(button, setGridBagConstraints(gridy, gridx, gridheight, gridwidth, text));
@@ -187,7 +185,7 @@ public abstract class ViewMaster{
         button.setFont(fontButton);
         button.setPreferredSize(sizeDefault);
         button.setBackground(colorDefaultBlue);
-        button.setForeground(colorDefaultWhite);
+        button.setForeground(colorDefaultBlack);
         button.setFocusable(false);
 
         newPane.add(button, setGridBagConstraints(gridy, gridx, gridheight, gridwidth, text));
@@ -221,12 +219,22 @@ public abstract class ViewMaster{
 
     public JTable setDefaultTableList(JTable table, int gridy, int gridx, int gridheight, int gridwidth, String text) {
 
-        table.setFont(fontText);
-        table.setBackground(colorDefaultBlue);
-        table.setForeground(colorDefaultBlack);
+        JScrollPane scrollPane = new JScrollPane(table);
+        
+        scrollPane.setFont(fontText);
+        scrollPane.setBackground(colorDefaultBlue);
+        scrollPane.setForeground(colorDefaultBlack);
+        
 
-        pane.add(table, setGridBagConstraints(gridy, gridx, gridheight, gridwidth, text));
-
+        table.setPreferredScrollableViewportSize(new Dimension(500, 70));
+        table.setFillsViewportHeight(true);
+        table.setGridColor(colorDefaultBlue);
+        //table.add(scrollPane);
+        
+        pane.add(scrollPane, setGridBagConstraints(gridy, gridx, gridheight, gridwidth, text));
+        
+        //pane.add(table, setGridBagConstraints(gridy, gridx, gridheight, gridwidth, text));
+        
         return table;
     }
 

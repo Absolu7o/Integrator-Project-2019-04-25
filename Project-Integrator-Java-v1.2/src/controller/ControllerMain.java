@@ -23,7 +23,7 @@ public abstract class ControllerMain {
         //new ViewLogin();
         Userpermission userp = new Userpermission(new Userlogin(1), Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE);
         new ViewMenuSystem(userp);
-
+       
     }
 
     public void insertUserLog(Userlog userlog) {

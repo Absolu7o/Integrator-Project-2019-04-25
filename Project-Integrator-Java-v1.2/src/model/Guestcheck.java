@@ -43,9 +43,9 @@ public class Guestcheck  implements java.io.Serializable {
     }
    
      @Id 
-
     
-    @Column(name="code", nullable=false)
+    
+    @Column(name="code", nullable=false) 
     public int getCode() {
         return this.code;
     }
